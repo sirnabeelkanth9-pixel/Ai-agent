@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Business Agent</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c27;
+    --border: #2a2a3d;
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --accent3: #43e97b;
+    --accent4: #f7971e;
+    --text: #e8e8f0;
+    --muted: #7070a0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-image: radial-gradient(ellipse at 20% 50%, rgba(108,99,255,0.07) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 20%, rgba(255,101,132,0.07) 0%, transparent 50%);
+  }
+
+  .container {
+    width: 100%;
+    max-width: 480px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+    animation: fadeDown 0.6s ease;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #6c63ff, #ff6584);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+  }
+
+  .tagline {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  /* Specialist Selector */
+  .specialists {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+    animation: fadeUp 0.6s ease 0.1s both;
+  }
+
+  .spec-btn {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .spec-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+
+  .spec-btn.active {
+    border-color: var(--spec-color);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--spec-color) 10%, var(--surface)), var(--surface));
+    box-shadow: 0 0 20px color-mix(in srgb, var(--spec-color) 20%, transparent);
+  }
+
+  .spec-icon { font-size: 20px; flex-shrink: 0; }
+
+  .spec-info .spec-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .spec-info .spec-desc {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  .active-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--spec-color);
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: none;
+    box-shadow: 0 0 8px var(--spec-color);
+  }
+
+  .spec-btn.active .active-dot { display: block; }
+
+  /* Chat Window */
+  .chat-window {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    animation: fadeUp 0.6s ease 0.2s both;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  .chat-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface2);
+  }
+
+  .agent-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    background: linear-gradient(135deg, var(--spec-color, #6c63ff), color-mix(in srgb, var(--spec-color, #6c63ff) 60%, #ff6584));
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+
+  .agent-info .agent-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .agent-info .agent-status {
+    font-size: 11px;
+    color: var(--accent3);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .status-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent3);
+    animation: pulse 2s infinite;
+  }
+
+  .messages {
+    height: 320px;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-behavior: smooth;
+  }
+
+  .messages::-webkit-scrollbar { width: 4px; }
+  .messages::-webkit-scrollbar-track { background: transparent; }
+  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .msg {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    animation: msgIn 0.3s ease;
+  }
+
+  .msg.bot {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg.user {
+    background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, var(--accent2)));
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    color: white;
+  }
+
+  .typing {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    border-bottom-left-radius: 4px;
+    width: fit-content;
+    align-self: flex-start;
+  }
+
+  .typing span {
+    width: 6px;
+    height: 6px;
+    background: var(--muted);
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+  /* Quick replies */
+  .quick-replies {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 0 16px 10px;
+  }
+
+  .qr-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .qr-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(108,99,255,0.05);
+  }
+
+  /* Input */
+  .input-area {
+    padding: 12px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: var(--surface2);
+  }
+
+  .input-area input {
+    flex: 1;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .input-area input:focus { border-color: var(--accent); }
+  .input-area input::placeholder { color: var(--muted); }
+
+  .send-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, opacity 0.2s;
+    flex-shrink: 0;
+  }
+
+  .send-btn:hover { transform: scale(1.05); }
+  .send-btn:active { transform: scale(0.95); }
+  .send-btn svg { width: 16px; height: 16px; fill: white; }
+
+  /* Powered by */
+  .powered {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 11px;
+    color: var(--muted);
+    animation: fadeUp 0.6s ease 0.3s both;
+  }
+
+  .powered span {
+    background: linear-gradient(135deg, #6c63ff, #ff6584);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
+  }
+
+  /* Animations */
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: none; } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  @keyframes msgIn { from { opacity: 0; transform: scale(0.95) translateY(6px); } to { opacity: 1; transform: none; } }
+  @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="logo">NexAgent</div>
+    <div class="tagline">Your AI-powered business assistant</div>
+  </div>
+
+  <!-- Specialist Selector -->
+  <div class="specialists">
+    <button class="spec-btn active" style="--spec-color:#6c63ff" data-spec="support" onclick="switchSpec(this)">
+      <span class="spec-icon">🛡️</span>
+      <div class="spec-info">
+        <div class="spec-name">Customer Support</div>
+        <div class="spec-desc">Resolve issues fast</div>
+      </div>
+      <div class="active-dot"></div>
+    </button>
+    <button class="spec-btn" style="--spec-color:#43e97b" data-spec="appointment" onclick="switchSpec(this)">
+      <span class="spec-icon">📅</span>
+      <div class="spec-info">
+        <div class="spec-name">Appointment</div>
+        <div class="spec-desc">Book & schedule</div>
+      </div>
+      <div class="active-dot"></div>
+    </button>
+    <button class="spec-btn" style="--spec-color:#f7971e" data-spec="collector" onclick="switchSpec(this)">
+      <span class="spec-icon">📋</span>
+      <div class="spec-info">
+        <div class="spec-name">Info Collector</div>
+        <div class="spec-desc">Gather details</div>
+      </div>
+      <div class="active-dot"></div>
+    </button>
+    <button class="spec-btn" style="--spec-color:#ff6584" data-spec="leads" onclick="switchSpec(this)">
+      <span class="spec-icon">🎯</span>
+      <div class="spec-info">
+        <div class="spec-name">Lead Qualifier</div>
+        <div class="spec-desc">Convert prospects</div>
+      </div>
+      <div class="active-dot"></div>
+    </button>
+  </div>
+
+  <!-- Chat Window -->
+  <div class="chat-window">
+    <div class="chat-header">
+      <div class="agent-avatar" id="agentAvatar">🛡️</div>
+      <div class="agent-info">
+        <div class="agent-name" id="agentName">Customer Support Agent</div>
+        <div class="agent-status"><span class="status-dot"></span> Online & Ready</div>
+      </div>
+    </div>
+
+    <div class="messages" id="messages"></div>
+
+    <div class="quick-replies" id="quickReplies"></div>
+
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Type your message..." onkeydown="if(event.key==='Enter') sendMessage()">
+      <button class="send-btn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24"><path d="M2 21L23 12 2 3v7l15 2-15 2v7z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="powered">Powered by <span>Claude AI</span> · Built with NexAgent</div>
+</div>
+
+<script>
+const SPECIALISTS = {
+  support: {
+    name: "Customer Support Agent",
+    icon: "🛡️",
+    color: "#6c63ff",
+    systemPrompt: `You are a friendly, empathetic Customer Support Specialist. Your goals:
+- Resolve customer complaints and issues quickly
+- Apologize sincerely when needed
+- Offer clear solutions or escalation paths
+- Keep responses concise (2-3 sentences max)
+- Always end with "Is there anything else I can help you with?"
+Be warm, professional, and solution-focused.`,
+    greeting: "Hi there! 👋 I'm your Customer Support Specialist. I'm here to help resolve any issues you're experiencing. What can I assist you with today?",
+    quickReplies: ["I have a complaint", "Track my order", "Request a refund", "Technical issue"]
+  },
+  appointment: {
+    name: "Appointment Specialist",
+    icon: "📅",
+    color: "#43e97b",
+    systemPrompt: `You are an Appointment Booking Specialist. Your goals:
+- Help users schedule, reschedule, or cancel appointments
+- Collect: preferred date, time, service type, and name
+- Confirm details back to the user
+- Keep responses concise and friendly (2-3 sentences)
+- Always confirm the booking at the end
+Be organized, efficient, and friendly.`,
+    greeting: "Hello! 📅 I'm your Appointment Specialist. I can help you book, reschedule, or cancel an appointment. What would you like to do?",
+    quickReplies: ["Book appointment", "Reschedule", "Cancel booking", "Check availability"]
+  },
+  collector: {
+    name: "Information Collector",
+    icon: "📋",
+    color: "#f7971e",
+    systemPrompt: `You are an Information Collection Specialist. Your goals:
+- Gather required information from users in a friendly, natural way
+- Collect: full name, email, phone, and specific details relevant to their inquiry
+- Ask one question at a time, don't overwhelm
+- Confirm collected info at the end
+- Keep responses short and clear
+Be thorough but conversational.`,
+    greeting: "Hi! 📋 I'm here to collect some information to better serve you. This will only take a moment. Could I start with your full name?",
+    quickReplies: ["Get started", "Why do you need this?", "Privacy policy", "Skip a field"]
+  },
+  leads: {
+    name: "Lead Qualification Agent",
+    icon: "🎯",
+    color: "#ff6584",
+    systemPrompt: `You are a Lead Qualification Specialist. Your goals:
+- Identify if the prospect is a good fit for our services
+- Ask about: budget range, timeline, company size, decision-making authority
+- Be conversational, NOT salesy
+- Score leads: Hot (ready now), Warm (3-6 months), Cold (just browsing)
+- Keep responses concise (2-3 sentences)
+Be consultative, curious, and helpful — never pushy.`,
+    greeting: "Hey there! 🎯 I'm here to understand your needs and see how we can help. Quick question — what brought you here today?",
+    quickReplies: ["Exploring options", "Need a solution ASAP", "Comparing vendors", "Just curious"]
+  }
+};
+
+let currentSpec = 'support';
+let conversationHistory = {};
+let isLoading = false;
+
+// Init each specialist's history
+Object.keys(SPECIALISTS).forEach(k => conversationHistory[k] = []);
+
+function switchSpec(btn) {
+  document.querySelectorAll('.spec-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentSpec = btn.dataset.spec;
+
+  const spec = SPECIALISTS[currentSpec];
+  document.getElementById('agentName').textContent = spec.name;
+  document.getElementById('agentAvatar').textContent = spec.icon;
+  document.getElementById('agentAvatar').style.background = `linear-gradient(135deg, ${spec.color}, ${spec.color}99)`;
+
+  renderMessages();
+  renderQuickReplies();
+
+  if (conversationHistory[currentSpec].length === 0) {
+    showGreeting();
+  }
+}
+
+function showGreeting() {
+  const spec = SPECIALISTS[currentSpec];
+  conversationHistory[currentSpec] = [];
+  renderMessages();
+  setTimeout(() => {
+    showTyping();
+    setTimeout(() => {
+      hideTyping();
+      addMessage('bot', spec.greeting);
+    }, 1000);
+  }, 200);
+}
+
+function addMessage(role, content) {
+  conversationHistory[currentSpec].push({ role, content });
+  renderMessages();
+}
+
+function renderMessages() {
+  const container = document.getElementById('messages');
+  const history = conversationHistory[currentSpec];
+
+  container.innerHTML = history.map(m => `
+    <div class="msg ${m.role === 'user' ? 'user' : 'bot'}">${m.content}</div>
+  `).join('');
+
+  container.scrollTop = container.scrollHeight;
+}
+
+function renderQuickReplies() {
+  const spec = SPECIALISTS[currentSpec];
+  const container = document.getElementById('quickReplies');
+  if (conversationHistory[currentSpec].length <= 1) {
+    container.innerHTML = spec.quickReplies.map(r =>
+      `<button class="qr-btn" onclick="sendQuick('${r}')">${r}</button>`
+    ).join('');
+  } else {
+    container.innerHTML = '';
+  }
+}
+
+let typingEl = null;
+function showTyping() {
+  const container = document.getElementById('messages');
+  typingEl = document.createElement('div');
+  typingEl.className = 'typing';
+  typingEl.innerHTML = '<span></span><span></span><span></span>';
+  container.appendChild(typingEl);
+  container.scrollTop = container.scrollHeight;
+}
+
+function hideTyping() {
+  if (typingEl) { typingEl.remove(); typingEl = null; }
+}
+
+async function sendMessage() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text || isLoading) return;
+
+  input.value = '';
+  addMessage('user', text);
+  document.getElementById('quickReplies').innerHTML = '';
+  await getAIResponse(text);
+}
+
+async function sendQuick(text) {
+  if (isLoading) return;
+  addMessage('user', text);
+  document.getElementById('quickReplies').innerHTML = '';
+  await getAIResponse(text);
+}
+
+async function getAIResponse(userText) {
+  isLoading = true;
+  showTyping();
+
+  const spec = SPECIALISTS[currentSpec];
+  const history = conversationHistory[currentSpec];
+
+  // Build messages array (exclude current user msg since we just added it, build from history)
+  const msgs = history
+    .filter(m => !(m.role === 'bot' && m.content === spec.greeting))
+    .map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content }));
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "x-api-key": "YOUR-API-KEY-HERE",
+        "anthropic-version": "2023-06-01"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: spec.systemPrompt,
+        messages: msgs
+      })
+    });
+
+    const data = await response.json();
+    const reply = data.content?.map(b => b.text || '').join('') || "I'm sorry, I couldn't process that. Please try again.";
+
+    hideTyping();
+    addMessage('bot', reply);
+  } catch (err) {
+    hideTyping();
+    addMessage('bot', "Sorry, I'm having trouble connecting. Please try again in a moment.");
+  }
+
+  isLoading = false;
+}
+
+// Init
+switchSpec(document.querySelector('.spec-btn.active'));
+</script>
+</body>
+</html>
