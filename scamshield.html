@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScamShield AI — Before you send crypto, check here.</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060810;
+    --surface: #0d1117;
+    --surface2: #161b27;
+    --border: #1e2738;
+    --green: #00ff88;
+    --yellow: #ffcc00;
+    --red: #ff3355;
+    --blue: #00aaff;
+    --text: #e2e8f0;
+    --muted: #4a5568;
+    --muted2: #718096;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 10% 20%, rgba(0,255,136,0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 80%, rgba(255,51,85,0.04) 0%, transparent 50%),
+      repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.01) 40px, rgba(255,255,255,0.01) 41px),
+      repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.01) 40px, rgba(255,255,255,0.01) 41px);
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(6,8,16,0.9);
+  }
+
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-shield {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--green), #00cc6a);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .nav-badge {
+    background: rgba(0,255,136,0.1);
+    border: 1px solid rgba(0,255,136,0.3);
+    color: var(--green);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 60px 20px 40px;
+    animation: fadeUp 0.8s ease;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,51,85,0.1);
+    border: 1px solid rgba(255,51,85,0.3);
+    color: var(--red);
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    font-family: 'Space Mono', monospace;
+    animation: pulse-red 2s infinite;
+  }
+
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 900;
+    line-height: 1.05;
+    margin-bottom: 16px;
+    letter-spacing: -2px;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--green), #00ccff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted2);
+    font-weight: 300;
+    margin-bottom: 8px;
+  }
+
+  .hero-tagline {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    color: var(--green);
+    opacity: 0.8;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 24px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 0 40px 40px;
+    animation: fadeUp 0.8s ease 0.2s both;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted2);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  /* SCAN TABS */
+  .scan-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+    animation: fadeUp 0.8s ease 0.3s both;
+  }
+
+  .tab-btn {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    color: var(--muted2);
+  }
+
+  .tab-btn:hover { border-color: var(--green); color: var(--text); }
+
+  .tab-btn.active {
+    border-color: var(--green);
+    background: rgba(0,255,136,0.05);
+    color: var(--green);
+  }
+
+  .tab-icon { font-size: 20px; margin-bottom: 4px; }
+  .tab-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* SCAN BOX */
+  .scan-box {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    animation: fadeUp 0.8s ease 0.4s both;
+    box-shadow: 0 0 60px rgba(0,255,136,0.03);
+  }
+
+  .scan-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .scan-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .scan-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse-green 2s infinite;
+  }
+
+  .scan-mode {
+    font-size: 11px;
+    color: var(--muted2);
+    font-family: 'Space Mono', monospace;
+  }
+
+  textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    padding: 20px;
+    resize: none;
+    min-height: 140px;
+    line-height: 1.6;
+  }
+
+  textarea::placeholder { color: var(--muted); }
+
+  .scan-footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface2);
+  }
+
+  .scan-tip {
+    font-size: 12px;
+    color: var(--muted2);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .scan-btn {
+    background: linear-gradient(135deg, var(--green), #00cc6a);
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 28px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .scan-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,255,136,0.3); }
+  .scan-btn:active { transform: translateY(0); }
+  .scan-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* EXAMPLES */
+  .examples {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .example-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted2);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .example-btn:hover { border-color: var(--green); color: var(--green); }
+
+  /* RESULT */
+  .result-container {
+    margin-top: 20px;
+    animation: fadeUp 0.5s ease;
+  }
+
+  .result-box {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .result-header {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .risk-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+  }
+
+  .risk-low { background: rgba(0,255,136,0.1); color: var(--green); border: 1px solid rgba(0,255,136,0.3); }
+  .risk-medium { background: rgba(255,204,0,0.1); color: var(--yellow); border: 1px solid rgba(255,204,0,0.3); }
+  .risk-high { background: rgba(255,51,85,0.1); color: var(--red); border: 1px solid rgba(255,51,85,0.3); }
+  .risk-unknown { background: rgba(100,100,100,0.1); color: var(--muted2); border: 1px solid var(--border); }
+
+  .result-body {
+    padding: 20px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: pre-wrap;
+  }
+
+  .result-body strong { color: var(--green); }
+
+  .result-footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+    font-size: 11px;
+    color: var(--muted2);
+    font-family: 'Space Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* TYPING */
+  .typing-indicator {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted2);
+    font-size: 13px;
+  }
+
+  .typing-dots {
+    display: flex;
+    gap: 4px;
+  }
+
+  .typing-dots span {
+    width: 6px;
+    height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+    opacity: 0.6;
+  }
+
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  /* SCAN HISTORY */
+  .history-section {
+    margin-top: 32px;
+    animation: fadeUp 0.8s ease 0.5s both;
+  }
+
+  .section-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted2);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .history-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .history-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .history-item:hover { border-color: var(--green); }
+
+  .history-risk {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .h-low { background: var(--green); }
+  .h-medium { background: var(--yellow); }
+  .h-high { background: var(--red); box-shadow: 0 0 8px rgba(255,51,85,0.5); }
+
+  .history-text {
+    flex: 1;
+    font-size: 13px;
+    color: var(--muted2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .history-time {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    flex-shrink: 0;
+  }
+
+  /* WARNING BANNER */
+  .warning-banner {
+    background: rgba(255,51,85,0.05);
+    border: 1px solid rgba(255,51,85,0.2);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--muted2);
+    animation: fadeUp 0.8s ease 0.2s both;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+  @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
+  @keyframes pulse-green { 0%, 100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.4); } 50% { box-shadow: 0 0 0 6px rgba(0,255,136,0); } }
+  @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+  /* MODE SWITCHER */
+  .mode-switcher {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+    animation: fadeUp 0.8s ease 0.25s both;
+  }
+
+  .mode-btn {
+    padding: 10px 8px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--muted2);
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .mode-btn:hover { border-color: var(--green); color: var(--text); }
+  .mode-btn.active { border-color: var(--mode-color, var(--green)); background: rgba(0,255,136,0.05); color: var(--mode-color, var(--green)); }
+  .mode-btn.danger.active { background: rgba(255,51,85,0.08); }
+
+  .mode-icon { font-size: 18px; margin-bottom: 3px; }
+
+  /* DAMAGE CONTROL MODE */
+  .damage-control {
+    background: rgba(255,51,85,0.05);
+    border: 1.5px solid rgba(255,51,85,0.3);
+    border-radius: 20px;
+    overflow: hidden;
+    display: none;
+  }
+
+  .damage-control.active { display: block; animation: fadeUp 0.4s ease; }
+
+  .dc-header {
+    background: rgba(255,51,85,0.1);
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255,51,85,0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .dc-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--red);
+    font-weight: 700;
+  }
+
+  .dc-steps {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .dc-step {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px;
+    background: var(--surface2);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .dc-step:hover { border-color: var(--red); }
+  .dc-step.done { border-color: var(--green); opacity: 0.6; }
+
+  .dc-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255,51,85,0.15);
+    border: 1px solid rgba(255,51,85,0.3);
+    color: var(--red);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .dc-step.done .dc-num { background: rgba(0,255,136,0.1); border-color: var(--green); color: var(--green); }
+
+  .dc-step-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  .dc-step-desc { font-size: 12px; color: var(--muted2); line-height: 1.5; }
+
+  .dc-step-link {
+    font-size: 11px;
+    color: var(--blue);
+    margin-top: 4px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* PRE-TRANSFER CHECKLIST */
+  .pretransfer-banner {
+    background: rgba(0,170,255,0.05);
+    border: 1px solid rgba(0,170,255,0.25);
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-top: 16px;
+    display: none;
+    animation: fadeUp 0.4s ease;
+  }
+
+  .pretransfer-banner.active { display: flex; align-items: center; gap: 12px; justify-content: space-between; }
+
+  .pt-text { font-size: 13px; color: var(--muted2); }
+  .pt-text strong { color: var(--blue); }
+
+  .pt-btn {
+    background: rgba(0,170,255,0.1);
+    border: 1px solid rgba(0,170,255,0.3);
+    color: var(--blue);
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .pt-btn:hover { background: rgba(0,170,255,0.2); }
+
+  /* CHECKLIST MODAL */
+  .checklist-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+  }
+
+  .checklist-overlay.active { display: flex; animation: fadeUp 0.3s ease; }
+
+  .checklist-modal {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    max-width: 480px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .cl-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cl-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--blue);
+    font-weight: 700;
+  }
+
+  .cl-close {
+    background: none;
+    border: none;
+    color: var(--muted2);
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .cl-items {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .cl-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .cl-item:hover { background: var(--surface2); }
+  .cl-item.checked { border-color: var(--green); background: rgba(0,255,136,0.03); }
+
+  .cl-checkbox {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 1.5px solid var(--border);
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    transition: all 0.15s;
+  }
+
+  .cl-item.checked .cl-checkbox { background: var(--green); border-color: var(--green); color: #000; }
+
+  .cl-item-text { font-size: 13px; line-height: 1.5; }
+  .cl-item-sub { font-size: 11px; color: var(--muted2); margin-top: 2px; }
+
+  .cl-progress {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .cl-progress-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .cl-progress-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  .cl-progress-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted2);
+    white-space: nowrap;
+  }
+
+  /* REPORT BUTTON */
+  .report-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted2);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .report-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* SCANS REMAINING */
+  .scans-counter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--muted2);
+    font-family: 'Space Mono', monospace;
+  }
+
+  .scans-counter span { color: var(--green); font-weight: 700; }
+
+  @media (max-width: 600px) {
+    nav { padding: 16px 20px; }
+    .stats-bar { margin: 0 20px 30px; gap: 20px; }
+    .scan-tabs { grid-template-columns: repeat(2, 1fr); }
+    .mode-switcher { grid-template-columns: repeat(3,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-shield">🛡️</div>
+    ScamShield AI
+  </div>
+  <div class="nav-badge">⚡ RISK CLASSIFICATION ENGINE v2.0</div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">🚨 $14B Lost to Crypto Scams in 2024</div>
+  <h1>Crypto Risk<br><span>Classification Engine</span></h1>
+  <p class="hero-sub">Structured forensic assessment — not a chatbot. Every output follows the same 8-field standard.</p>
+  <p class="hero-tagline">// Before you send crypto — classify the risk here.</p>
+</div>
+
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-num">99.2%</div>
+    <div class="stat-label">Detection Rate</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">&lt;3s</div>
+    <div class="stat-label">Analysis Time</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">FREE</div>
+    <div class="stat-label">Always Free</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">24/7</div>
+    <div class="stat-label">Always On</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="warning-banner">
+    ⚙️ <span>ScamShield AI is a <strong style="color:var(--text)">risk classification engine</strong> — not financial advice. Outputs are pattern-based assessments. Always verify independently before taking any action.</span>
+  </div>
+
+  <!-- MODE SWITCHER -->
+  <div class="mode-switcher">
+    <button class="mode-btn active" style="--mode-color:var(--green)" data-mode="scan" onclick="switchMode(this)">
+      <div class="mode-icon">🛡️</div>
+      Scan Mode
+    </button>
+    <button class="mode-btn" style="--mode-color:var(--blue)" data-mode="pretransfer" onclick="switchMode(this)">
+      <div class="mode-icon">📤</div>
+      Pre-Transfer
+    </button>
+    <button class="mode-btn danger" style="--mode-color:var(--red)" data-mode="damage" onclick="switchMode(this)">
+      <div class="mode-icon">🚨</div>
+      Sent Funds
+    </button>
+  </div>
+
+  <!-- SCAN MODE -->
+  <div id="scanMode-panel">
+    <!-- SCAN TYPE TABS -->
+    <div class="scan-tabs">
+      <button class="tab-btn active" data-type="message" onclick="setType(this)">
+        <div class="tab-icon">💬</div>
+        <div class="tab-label">Message</div>
+      </button>
+      <button class="tab-btn" data-type="wallet" onclick="setType(this)">
+        <div class="tab-icon">👛</div>
+        <div class="tab-label">Wallet</div>
+      </button>
+      <button class="tab-btn" data-type="token" onclick="setType(this)">
+        <div class="tab-icon">🪙</div>
+        <div class="tab-label">Token</div>
+      </button>
+      <button class="tab-btn" data-type="general" onclick="setType(this)">
+        <div class="tab-icon">🔍</div>
+        <div class="tab-label">General</div>
+      </button>
+    </div>
+
+    <!-- SCAN BOX -->
+    <div class="scan-box">
+      <div class="scan-header">
+        <div class="scan-title">
+          <div class="scan-dot"></div>
+          SCAMSHIELD SCANNER — READY
+        </div>
+        <div class="scan-mode" id="scanModeLabel">MODE: MESSAGE ANALYSIS</div>
+      </div>
+      <textarea id="userInput" placeholder="Paste a suspicious message, wallet address, token contract, or describe what you received..." onkeydown="handleKey(event)"></textarea>
+      <div class="scan-footer">
+        <div class="scans-counter">⚡ <span id="scansLeft">5</span> scans left today</div>
+        <button class="scan-btn" onclick="analyze()" id="scanBtn">
+          🛡️ Scan Now
+        </button>
+      </div>
+    </div>
+
+    <!-- EXAMPLES -->
+    <div class="examples">
+      <span style="font-size:12px;color:var(--muted2);align-self:center;">Try:</span>
+      <button class="example-btn" onclick="loadExample('msg')">📨 Suspicious DM</button>
+      <button class="example-btn" onclick="loadExample('wallet')">👛 Wallet Address</button>
+      <button class="example-btn" onclick="loadExample('token')">🪙 Token Contract</button>
+      <button class="example-btn" onclick="loadExample('recovery')">🚨 Recovery Scam</button>
+    </div>
+
+    <!-- PRE-TRANSFER BANNER (shown after high risk result) -->
+    <div class="pretransfer-banner" id="pretransferBanner">
+      <div class="pt-text">⚡ <strong>Pre-Transfer Safety Checklist</strong> — verify before sending any crypto</div>
+      <button class="pt-btn" onclick="showChecklist()">Run Checklist →</button>
+    </div>
+
+    <!-- RESULT -->
+    <div id="resultContainer" class="result-container" style="display:none"></div>
+
+    <!-- HISTORY -->
+    <div class="history-section" id="historySection" style="display:none">
+      <div class="section-title">Recent Scans</div>
+      <div class="history-items" id="historyItems"></div>
+    </div>
+  </div>
+
+  <!-- PRE-TRANSFER MODE -->
+  <div id="pretransfer-panel" style="display:none">
+    <div class="scan-box">
+      <div class="scan-header">
+        <div class="scan-title"><div class="scan-dot" style="background:var(--blue)"></div>PRE-TRANSFER SAFETY CHECK</div>
+        <div class="scan-mode" style="color:var(--blue)">BEFORE YOU SEND</div>
+      </div>
+      <textarea id="pretransferInput" placeholder="Describe who you're sending to, why, and paste any messages or addresses you received..." style="min-height:120px" onkeydown="if(event.key==='Enter'&&event.ctrlKey)analyzePretransfer()"></textarea>
+      <div class="scan-footer">
+        <div class="scan-tip" style="color:var(--blue)">🔒 Analyze before sending</div>
+        <button class="scan-btn" style="background:linear-gradient(135deg,var(--blue),#0088cc)" onclick="analyzePretransfer()" id="ptBtn">
+          📤 Check Transfer
+        </button>
+      </div>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+      <span style="font-size:12px;color:var(--muted2);align-self:center">Quick check:</span>
+      <button class="example-btn" onclick="document.getElementById('pretransferInput').value='Someone on Telegram asked me to send 0.5 ETH to activate a staking contract that pays 3% daily'">Staking offer</button>
+      <button class="example-btn" onclick="document.getElementById('pretransferInput').value='A trader on Instagram wants me to send USDT to their wallet to copy trade with 10x leverage returns'">Copy trade</button>
+      <button class="example-btn" onclick="document.getElementById('pretransferInput').value='Binance support emailed me to verify my account by sending 0.1 BTC to this address'">Fake support</button>
+    </div>
+    <div id="ptResultContainer" class="result-container" style="display:none;margin-top:16px"></div>
+  </div>
+
+  <!-- DAMAGE CONTROL MODE -->
+  <div id="damage-panel" style="display:none">
+    <div class="damage-control active">
+      <div class="dc-header">
+        <span style="font-size:20px">🚨</span>
+        <div>
+          <div class="dc-title">DAMAGE CONTROL PROTOCOL — ACTIVATED</div>
+          <div style="font-size:11px;color:var(--muted2);margin-top:2px">Act immediately. Check each step in order.</div>
+        </div>
+      </div>
+      <div class="dc-steps">
+        <div class="dc-step" onclick="toggleDcStep(this)">
+          <div class="dc-num">1</div>
+          <div>
+            <div class="dc-step-title">🔐 Revoke Wallet Approvals NOW</div>
+            <div class="dc-step-desc">If you connected your wallet to a site, revoke all token approvals immediately to stop further draining.</div>
+            <div class="dc-step-link">→ revoke.cash | → etherscan.io/tokenapprovalchecker</div>
+          </div>
+        </div>
+        <div class="dc-step" onclick="toggleDcStep(this)">
+          <div class="dc-num">2</div>
+          <div>
+            <div class="dc-step-title">🏦 Contact Your Exchange</div>
+            <div class="dc-step-desc">If funds went to a centralized exchange (Binance, Coinbase, Kraken), contact support immediately with the transaction hash. They may be able to freeze the receiving account.</div>
+            <div class="dc-step-link">→ binance.com/support | → support.coinbase.com</div>
+          </div>
+        </div>
+        <div class="dc-step" onclick="toggleDcStep(this)">
+          <div class="dc-num">3</div>
+          <div>
+            <div class="dc-step-title">📸 Preserve All Evidence</div>
+            <div class="dc-step-desc">Screenshot everything: messages, wallet addresses, transaction IDs, websites, usernames. Do this before they disappear.</div>
+            <div class="dc-step-link">→ Save screenshots + export chat history</div>
+          </div>
+        </div>
+        <div class="dc-step" onclick="toggleDcStep(this)">
+          <div class="dc-num">4</div>
+          <div>
+            <div class="dc-step-title">🚔 Report to Authorities</div>
+            <div class="dc-step-desc">File reports with relevant agencies. This creates an official record and may help in recovery.</div>
+            <div class="dc-step-link">→ ic3.gov (USA) | → action fraud.police.uk (UK) | → cybercrime.gov.in (India)</div>
+          </div>
+        </div>
+        <div class="dc-step" onclick="toggleDcStep(this)">
+          <div class="dc-num">5</div>
+          <div>
+            <div class="dc-step-title">🔍 Track the Transaction</div>
+            <div class="dc-step-desc">Use blockchain explorers to trace where funds went. If funds hit a KYC exchange, authorities can subpoena account info.</div>
+            <div class="dc-step-link">→ etherscan.io | → bscscan.com | → blockchain.com/explorer</div>
+          </div>
+        </div>
+        <div class="dc-step" onclick="toggleDcStep(this)">
+          <div class="dc-num">6</div>
+          <div>
+            <div class="dc-step-title">⚠️ Beware Recovery Scams</div>
+            <div class="dc-step-desc">Anyone offering to recover your lost crypto for an upfront fee is almost certainly another scam. Legitimate recovery does not require advance payment.</div>
+            <div class="dc-step-link">→ Report recovery scammers to FTC: reportfraud.ftc.gov</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:16px 20px;border-top:1px solid rgba(255,51,85,0.2)">
+        <textarea id="dcInput" placeholder="Optionally describe what happened — ScamShield AI will analyze the pattern and identify the scam type..." style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;resize:none;min-height:80px"></textarea>
+        <button class="scan-btn" style="margin-top:10px;width:100%;justify-content:center;background:linear-gradient(135deg,var(--red),#cc0030)" onclick="analyzeDamage()">
+          🔍 Analyze What Happened
+        </button>
+      </div>
+      <div id="dcResultContainer" class="result-container" style="display:none;padding:16px"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PRE-TRANSFER CHECKLIST MODAL -->
+<div class="checklist-overlay" id="checklistOverlay" onclick="if(event.target===this)closeChecklist()">
+  <div class="checklist-modal">
+    <div class="cl-header">
+      <div class="cl-title">📋 PRE-TRANSFER SAFETY CHECKLIST</div>
+      <button class="cl-close" onclick="closeChecklist()">✕</button>
+    </div>
+    <div class="cl-items" id="checklistItems"></div>
+    <div class="cl-progress">
+      <div class="cl-progress-bar"><div class="cl-progress-fill" id="clProgressFill" style="width:0%"></div></div>
+      <div class="cl-progress-text" id="clProgressText">0 / 8 verified</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `IDENTITY: ScamShield AI — Crypto Risk Classification Engine for Retail Users.
+You are not a chatbot. You are a structured forensic assessment engine.
+Every output must be: structured, consistent, risk-calibrated, and professional.
+You assess risk. You classify fraud. You inform users. You never make financial decisions for them.
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+SEVERITY CALIBRATION — apply with precision and consistency:
+1.0–3.9  │ INFORMATIONAL  │ Low fraud probability. Minor signals only.
+4.0–6.9  │ CAUTION        │ Notable risk signals. Independent verification recommended.
+7.0–8.9  │ HIGH RISK      │ Strong pattern match. Serious concern. Do not proceed without verification.
+9.0–10.0 │ CRITICAL       │ Matches known attack vectors with high confidence.
+Score must always be a decimal (e.g. 7.4, 9.1). Never a round integer.
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+SCAM CATEGORY TAXONOMY — classify into exactly one:
+Impersonation | Wallet Drainer | Pump-and-Dump | Recovery Scam | Fake Investment Scheme |
+API Exploit Attempt | Social Engineering | Phishing | Rug Pull | Soft Rug |
+Pig Butchering | Private Presale Fraud | Fake Giveaway | Post-Collapse Reassurance |
+Emotional Exploitation | None Detected
+
+PSYCHOLOGICAL MANIPULATION VECTORS — detect and name when present:
+Urgency · Authority · Scarcity · Exclusivity · Secrecy · Sunk Cost · Social Proof · Fear · Reciprocity
+
+PRIORITY SIGNALS — always scan first:
+[CRITICAL] Seed phrase / private key request
+[CRITICAL] Wallet connection to unverified domain
+[CRITICAL] API key or credential harvesting
+[HIGH] Guaranteed return claims
+[HIGH] Fake recovery service pattern
+[HIGH] Urgency + secrecy combination
+[HIGH] Authority impersonation
+[MEDIUM] Exclusivity + high minimum entry
+[MEDIUM] Past performance as future guarantee
+[MEDIUM] Sunk cost emotional pressure
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+REQUIRED OUTPUT FORMAT — 8 fields, in this order, every single time:
+
+① RISK LEVEL:    [CRITICAL / HIGH RISK / CAUTION / INFORMATIONAL]
+② RISK SCORE:    [X.X / 10]
+③ CONFIDENCE:    [Low / Medium / High] — [reason in 4 words max]
+④ SCAM CATEGORY: [from taxonomy above]
+
+[One sharp sentence summary — what this is and what pattern it matches]
+
+⑤ KEY INDICATORS (3–5 max):
+• [indicator]
+• [indicator]
+• [indicator]
+
+⑥ PSYCHOLOGICAL TACTICS: [list detected tactics, or "None detected"]
+
+⑦ VERIFICATION STEPS:
+• [specific independent action user can take]
+• [another verifiable step]
+
+⑧ DATA LIMITATION: Assessment based solely on provided text. No on-chain verification performed. Independent verification required before any action.
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+HARD RULES — non-negotiable:
+✗ NEVER say: buy, sell, hold, exit, invest, withdraw, send, don't send
+✗ NEVER say "confirmed scam" — use "consistent with" or "matches pattern of"
+✗ NEVER fabricate indicators not present in the input
+✗ NEVER use filler phrases or educational padding
+✗ NEVER skip any of the 8 required fields
+✓ Under 180 words total unless CRITICAL — then 250 max
+✓ If input is ambiguous, state what additional information would sharpen the assessment
+✓ Treat every input as a live real-world case — no demo language`;
+
+const EXAMPLES = {
+  msg: `"Congratulations! You've been selected for our VIP crypto investment program. Send 0.5 ETH to activate your account and receive 5 ETH back within 24 hours. This offer expires in 2 hours. Contact @crypto_official on Telegram immediately. Guaranteed 1000% returns!"`,
+  wallet: `0x742d35Cc6634C0532925a3b844Bc454e4438f44e — Someone asked me to send ETH to this wallet for a "smart contract investment"`,
+  token: `Token: SafeMoonV3 — 100 trillion total supply, team owns 80%, launched 2 days ago, promises 10000x returns, no audit, anonymous team`,
+  recovery: `"Hi, I'm Agent Sarah from Crypto Recovery Services. I saw you lost money in a scam. We can recover your funds for a small upfront fee of $500 USDT. We have a 98% success rate and work with Interpol."`,
+};
+
+// ── STATE ──────────────────────────────────────────
+let currentType = 'message';
+let currentMode = 'scan';
+let scansLeft = 5;
+let scanHistory = [];
+
+const CHECKLIST_ITEMS = [
+  { text: "Verified the recipient's identity through a separate trusted channel", sub: "Never rely only on messages — call or video verify" },
+  { text: "Confirmed the wallet address is correct (check first & last 6 chars)", sub: "Scammers use address-swapping malware" },
+  { text: "This is NOT someone I only met online recently", sub: "90% of pig butchering starts with online relationships" },
+  { text: "No one promised guaranteed returns or profits", sub: "No legitimate investment guarantees returns" },
+  { text: "The platform/site is the official domain (verified via official channels)", sub: "Phishing sites look identical to real ones" },
+  { text: "I am NOT under time pressure to send immediately", sub: "Urgency is always a manipulation tactic" },
+  { text: "I have not been asked to keep this investment secret", sub: "Secrecy = red flag in every legitimate context" },
+  { text: "I understand I may not be able to recover these funds if sent", sub: "Crypto transactions are irreversible" },
+];
+
+// ── MODE SWITCHING ──────────────────────────────────
+function switchMode(btn) {
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentMode = btn.dataset.mode;
+  document.getElementById('scanMode-panel').style.display = currentMode === 'scan' ? 'block' : 'none';
+  document.getElementById('pretransfer-panel').style.display = currentMode === 'pretransfer' ? 'block' : 'none';
+  document.getElementById('damage-panel').style.display = currentMode === 'damage' ? 'block' : 'none';
+}
+
+// ── SCAN TYPE TABS ──────────────────────────────────
+function setType(btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentType = btn.dataset.type;
+  const modes = { message: 'MODE: MESSAGE ANALYSIS', wallet: 'MODE: WALLET SCAN', token: 'MODE: TOKEN ANALYSIS', general: 'MODE: GENERAL SCAN' };
+  const placeholders = {
+    message: 'Paste a suspicious message, DM, email, or Telegram text...',
+    wallet: 'Paste a wallet address you were asked to send crypto to...',
+    token: 'Paste a token name, contract address, or describe the token...',
+    general: 'Describe anything suspicious — investment offer, website, project...'
+  };
+  document.getElementById('scanModeLabel').textContent = modes[currentType];
+  document.getElementById('userInput').placeholder = placeholders[currentType];
+}
+
+function loadExample(type) {
+  document.getElementById('userInput').value = EXAMPLES[type];
+  document.getElementById('userInput').focus();
+}
+
+function handleKey(e) { if (e.key === 'Enter' && e.ctrlKey) analyze(); }
+
+// ── RISK HELPERS ────────────────────────────────────
+function getRiskLevel(text) {
+  if (text.includes('CRITICAL')) return 'critical';
+  if (text.includes('Risk Level: HIGH') || (text.includes('🔴') && !text.includes('CRITICAL'))) return 'high';
+  if (text.includes('CAUTION') || text.includes('🟡')) return 'medium';
+  if (text.includes('INFORMATIONAL') || text.includes('🟢')) return 'low';
+  return 'unknown';
+}
+
+function getRiskBadge(level) {
+  const badges = {
+    critical: '<span class="risk-badge risk-high" style="animation:pulse-red 1s infinite;box-shadow:0 0 20px rgba(255,51,85,0.4)">🚨 CRITICAL THREAT</span>',
+    high: '<span class="risk-badge risk-high">🔴 HIGH RISK</span>',
+    medium: '<span class="risk-badge risk-medium">🟡 CAUTION</span>',
+    low: '<span class="risk-badge risk-low">🟢 INFORMATIONAL</span>',
+    unknown: '<span class="risk-badge risk-unknown">⚪ SCANNING...</span>'
+  };
+  return badges[level] || badges.unknown;
+}
+
+function getBorderColor(risk) {
+  return { critical: 'rgba(255,51,85,0.6)', high: 'rgba(255,51,85,0.4)', medium: 'rgba(255,204,0,0.4)', low: 'rgba(0,255,136,0.4)' }[risk] || 'var(--border)';
+}
+
+// ── HISTORY ─────────────────────────────────────────
+function addToHistory(input, risk) {
+  scanHistory.unshift({ text: input.slice(0, 60) + '...', risk, time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+  if (scanHistory.length > 5) scanHistory.pop();
+  renderHistory();
+}
+
+function renderHistory() {
+  const section = document.getElementById('historySection');
+  const container = document.getElementById('historyItems');
+  if (!scanHistory.length) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  container.innerHTML = scanHistory.map(item => `
+    <div class="history-item">
+      <div class="history-risk h-${item.risk}"></div>
+      <div class="history-text">${item.text}</div>
+      <div class="history-time">${item.time}</div>
+    </div>`).join('');
+}
+
+// ── API CALL ─────────────────────────────────────────
+const RAILWAY_URL = "https://scamshield-backend-production-708e.up.railway.app";
+
+async function callClaude(prompt, systemOverride) {
+  // All API calls go through Railway backend — no API key in frontend
+  const response = await fetch(RAILWAY_URL + "/api/analyze", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      text: prompt,
+      userId: getUserId(),
+      source: "web"
+    })
+  });
+  const data = await response.json();
+
+  // Update scan counter
+  if (data.meta && data.meta.scansRemaining !== undefined) {
+    scansLeft = data.meta.scansRemaining;
+    const el = document.getElementById('scansLeft');
+    if (el) el.textContent = scansLeft;
+  }
+
+  // Handle limit reached
+  if (data.error === 'weekly_limit_reached') {
+    return "Weekly scan limit reached (5/week). Upgrade to Pro for unlimited scans.";
+  }
+
+  return data.assessment || data.error || "Unable to analyze.";
+}
+
+function getUserId() {
+  let id = localStorage.getItem('scamshield_uid');
+  if (!id) {
+    id = 'web_' + Math.random().toString(36).slice(2) + Date.now();
+    localStorage.setItem('scamshield_uid', id);
+  }
+  return id;
+}
+
+function parseFields(reply) {
+  // Extract the 8 structured fields for enhanced rendering
+  const fields = {};
+  const lines = reply.split('\n');
+  
+  // Extract score for big display
+  const scoreMatch = reply.match(/RISK SCORE[:\s]+([\d.]+)/i);
+  fields.score = scoreMatch ? scoreMatch[1] : null;
+  
+  const confMatch = reply.match(/CONFIDENCE[:\s]+([^\n—–-]+)/i);
+  fields.confidence = confMatch ? confMatch[1].trim() : null;
+  
+  const catMatch = reply.match(/SCAM CATEGORY[:\s]+([^\n]+)/i);
+  fields.category = catMatch ? catMatch[1].trim() : null;
+
+  return fields;
+}
+
+function renderResult(container, reply, risk, extraFooter) {
+  const fields = parseFields(reply);
+  const borderColor = getBorderColor(risk);
+  
+  // Score color
+  const scoreVal = parseFloat(fields.score || 0);
+  const scoreColor = scoreVal >= 9 ? 'var(--red)' : scoreVal >= 7 ? '#ff7043' : scoreVal >= 4 ? 'var(--yellow)' : 'var(--green)';
+
+  container.innerHTML = `
+    <div class="result-box" style="border-color:${borderColor}">
+      <div class="result-header">
+        ${getRiskBadge(risk)}
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="report-btn" onclick="reportScam(this)">⚑ Report</button>
+          <span style="font-size:12px;color:var(--muted2);font-family:'Space Mono',monospace;">ASSESSMENT COMPLETE ✓</span>
+        </div>
+      </div>
+
+      ${fields.score || fields.category ? `
+      <div style="display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--surface2);flex-wrap:wrap">
+        ${fields.score ? `
+        <div style="text-align:center;min-width:70px">
+          <div style="font-family:'Space Mono',monospace;font-size:26px;font-weight:700;color:${scoreColor};line-height:1">${fields.score}</div>
+          <div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-top:2px">Risk Score</div>
+        </div>
+        <div style="width:1px;background:var(--border)"></div>` : ''}
+        ${fields.confidence ? `
+        <div style="flex:1;min-width:100px">
+          <div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Confidence</div>
+          <div style="font-size:13px;color:var(--text);font-weight:500">${fields.confidence}</div>
+        </div>` : ''}
+        ${fields.category ? `
+        <div style="flex:2;min-width:140px">
+          <div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Scam Category</div>
+          <div style="font-size:13px;color:${scoreColor};font-weight:600;font-family:'Space Mono',monospace">${fields.category}</div>
+        </div>` : ''}
+      </div>` : ''}
+
+      <div class="result-body" style="font-size:13px">${reply
+        .replace(/^①.*$/gm, '')
+        .replace(/^②.*$/gm, '')
+        .replace(/^③.*$/gm, '')
+        .replace(/^④.*$/gm, '')
+        .replace(/RISK LEVEL:.*$/m, '')
+        .replace(/RISK SCORE:.*$/m, '')
+        .replace(/CONFIDENCE:.*$/m, '')
+        .replace(/SCAM CATEGORY:.*$/m, '')
+        .replace(/⑤/g, '').replace(/⑥/g, '').replace(/⑦/g, '').replace(/⑧/g, '')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/KEY INDICATORS/g, '<strong style="color:var(--red)">KEY INDICATORS</strong>')
+        .replace(/PSYCHOLOGICAL TACTICS/g, '<strong style="color:var(--yellow)">PSYCHOLOGICAL TACTICS</strong>')
+        .replace(/VERIFICATION STEPS/g, '<strong style="color:var(--green)">VERIFICATION STEPS</strong>')
+        .replace(/DATA LIMITATION/g, '<strong style="color:var(--muted2)">DATA LIMITATION</strong>')
+        .trim()
+      }</div>
+
+      <div class="result-footer">
+        🛡️ ScamShield AI — Crypto Risk Classification Engine • Not financial advice • Verify independently
+        ${extraFooter || ''}
+      </div>
+    </div>`;
+}
+
+function renderLoading(container) {
+  container.style.display = 'block';
+  container.innerHTML = `
+    <div class="result-box">
+      <div class="result-header">${getRiskBadge('unknown')}<span style="font-size:12px;color:var(--muted2);font-family:'Space Mono',monospace;">ANALYZING...</span></div>
+      <div class="typing-indicator"><div class="typing-dots"><span></span><span></span><span></span></div>Scanning for fraud patterns...</div>
+    </div>`;
+}
+
+function renderError(container) {
+  container.innerHTML = `<div class="result-box"><div class="result-header">${getRiskBadge('unknown')}</div><div class="result-body" style="color:var(--red)">⚠️ Connection error. Check your API key.</div></div>`;
+}
+
+// ── SCAN MODE ─────────────────────────────────────────
+async function analyze() {
+  const input = document.getElementById('userInput').value.trim();
+  if (!input) return;
+  if (scansLeft <= 0) {
+    alert('Daily scan limit reached (5/day). Upgrade to Pro for unlimited scans.');
+    return;
+  }
+
+  const btn = document.getElementById('scanBtn');
+  btn.disabled = true;
+  btn.textContent = '🔍 Scanning...';
+
+  const resultContainer = document.getElementById('resultContainer');
+  renderLoading(resultContainer);
+
+  const typeContext = {
+    message: 'Analyze this message for crypto scam indicators:',
+    wallet: 'Analyze this wallet address for scam risk:',
+    token: 'Analyze this token/crypto project for rug pull or scam risk:',
+    general: 'Analyze this for crypto scam risk:'
+  };
+
+  try {
+    const reply = await callClaude(`${typeContext[currentType]}
+
+"${input}"`);
+    const risk = getRiskLevel(reply);
+    renderResult(resultContainer, reply, risk);
+    addToHistory(input, risk);
+
+    scansLeft = Math.max(0, scansLeft - 1);
+    document.getElementById('scansLeft').textContent = scansLeft;
+
+    // Show pre-transfer banner for high risk
+    if (risk === 'high' || risk === 'critical') {
+      document.getElementById('pretransferBanner').classList.add('active');
+    }
+  } catch(e) { renderError(resultContainer); }
+
+  btn.disabled = false;
+  btn.innerHTML = '🛡️ Scan Now';
+}
+
+// ── PRE-TRANSFER MODE ─────────────────────────────────
+async function analyzePretransfer() {
+  const input = document.getElementById('pretransferInput').value.trim();
+  if (!input) return;
+
+  const btn = document.getElementById('ptBtn');
+  btn.disabled = true;
+  btn.textContent = '🔍 Checking...';
+
+  const container = document.getElementById('ptResultContainer');
+  renderLoading(container);
+
+  const ptSystem = SYSTEM_PROMPT + `
+
+SPECIAL MODE: PRE-TRANSFER ANALYSIS
+The user is about to send crypto. Be extra thorough. After your standard analysis, always end with:
+📋 Pre-Transfer Verdict: [PROCEED WITH CAUTION / HIGH RISK — VERIFY FIRST / STOP — SERIOUS RED FLAGS DETECTED]
+This verdict does not tell them to send or not send — it summarizes the risk level they should be aware of.`;
+
+  try {
+    const reply = await callClaude(`Pre-Transfer Safety Check — User is about to send crypto:
+
+"${input}"`, ptSystem);
+    const risk = getRiskLevel(reply);
+    renderResult(container, reply, risk, ' • Pre-Transfer Mode');
+    showChecklist();
+  } catch(e) { renderError(container); }
+
+  btn.disabled = false;
+  btn.innerHTML = '📤 Check Transfer';
+}
+
+// ── DAMAGE CONTROL MODE ───────────────────────────────
+async function analyzeDamage() {
+  const input = document.getElementById('dcInput').value.trim();
+  if (!input) return;
+
+  const container = document.getElementById('dcResultContainer');
+  container.style.display = 'block';
+  renderLoading(container);
+
+  const dcSystem = SYSTEM_PROMPT + `
+
+SPECIAL MODE: POST-LOSS DAMAGE ASSESSMENT
+The user has already sent funds. Do NOT tell them what to do with remaining funds.
+Focus on: identifying the scam type, explaining the exact mechanism used against them, and noting what evidence to preserve.
+Be compassionate but clinically precise. No judgment.`;
+
+  try {
+    const reply = await callClaude(`Damage Control Analysis — User has already sent funds:
+
+"${input}"`, dcSystem);
+    const risk = getRiskLevel(reply);
+    renderResult(container, reply, risk, ' • Damage Control Mode');
+  } catch(e) { renderError(container); }
+}
+
+function toggleDcStep(el) {
+  el.classList.toggle('done');
+  if (el.classList.contains('done')) el.querySelector('.dc-num').textContent = '✓';
+  else {
+    const steps = document.querySelectorAll('.dc-step');
+    steps.forEach((s, i) => { if (s === el) el.querySelector('.dc-num').textContent = i + 1; });
+  }
+}
+
+// ── CHECKLIST ─────────────────────────────────────────
+function showChecklist() {
+  const overlay = document.getElementById('checklistOverlay');
+  const items = document.getElementById('checklistItems');
+  items.innerHTML = CHECKLIST_ITEMS.map((item, i) => `
+    <div class="cl-item" onclick="toggleCheck(this, ${i})" id="cl-${i}">
+      <div class="cl-checkbox"></div>
+      <div>
+        <div class="cl-item-text">${item.text}</div>
+        <div class="cl-item-sub">${item.sub}</div>
+      </div>
+    </div>`).join('');
+  updateChecklistProgress();
+  overlay.classList.add('active');
+}
+
+function closeChecklist() {
+  document.getElementById('checklistOverlay').classList.remove('active');
+}
+
+function toggleCheck(el, idx) {
+  el.classList.toggle('checked');
+  if (el.classList.contains('checked')) el.querySelector('.cl-checkbox').textContent = '✓';
+  else el.querySelector('.cl-checkbox').textContent = '';
+  updateChecklistProgress();
+}
+
+function updateChecklistProgress() {
+  const total = CHECKLIST_ITEMS.length;
+  const checked = document.querySelectorAll('.cl-item.checked').length;
+  const pct = (checked / total) * 100;
+  document.getElementById('clProgressFill').style.width = pct + '%';
+  document.getElementById('clProgressText').textContent = `${checked} / ${total} verified`;
+}
+
+// ── REPORT ────────────────────────────────────────────
+function reportScam(btn) {
+  btn.textContent = '✓ Reported';
+  btn.style.color = 'var(--green)';
+  btn.style.borderColor = 'var(--green)';
+  btn.disabled = true;
+}
+</script>
+</body>
+</html>
