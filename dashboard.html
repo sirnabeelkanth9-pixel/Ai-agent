@@ -635,7 +635,17 @@ async function runInvestigation() {
       ${(meta.campaignFlags||[]).length > 0 ? `<div class="result-row"><span class="result-key">CAMPAIGN</span><span class="result-val" style="color:var(--red);">${meta.campaignFlags.join(', ')}</span></div>` : ''}
       ${(meta.urlSignals||[]).length > 0 ? `<div class="result-row"><span class="result-key">URL RISK</span><span class="result-val" style="color:var(--yellow);font-size:11px;">${meta.urlSignals.join(' | ')}</span></div>` : ''}
       ${(meta.smartCombos||[]).length > 0 ? `<div class="result-row"><span class="result-key">COMBOS</span><span class="result-val" style="font-size:11px;color:var(--yellow);">${meta.smartCombos.join(' · ')}</span></div>` : ''}
-      ${meta.attackChain ? `<div class="result-row"><span class="result-key">ATTACK CHAIN</span><span class="result-val" style="color:var(--accent);font-family:var(--mono);font-size:11px;">${meta.attackChain}</span></div>` : ''}
+      ${meta.scenario ? `<div class="result-row"><span class="result-key">SCENARIO</span><span class="result-val" style="color:var(--red);font-weight:600;">${meta.scenario.name}</span></div>` : ''}
+      ${meta.psychScore ? `<div class="result-row"><span class="result-key">PSYCH PRESSURE</span><span class="result-val" style="color:var(--yellow);">${meta.psychLevel} (${meta.psychScore}/10) — ${(meta.psychTacticsDetailed||[]).map(t=>t.tactic).slice(0,4).join(' + ')}</span></div>` : ''}
+      ${meta.attackStages && meta.attackStages.length > 0 ? `
+        <div class="result-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
+          <span class="result-key">ATTACK STAGES</span>
+          <div style="display:flex;flex-direction:column;gap:4px;width:100%;">
+            ${meta.attackStages.map((s,i)=>`<div style="display:flex;gap:8px;align-items:center;font-size:12px;"><span style="font-family:var(--mono);color:var(--accent);font-size:10px;flex-shrink:0;">${i+1}</span><span style="color:#c0c0d0;">${s}</span>${i<meta.attackStages.length-1?'<span style="color:var(--muted);font-size:10px;">↓</span>':''}</div>`).join('')}
+          </div>
+        </div>` : meta.attackChain ? `<div class="result-row"><span class="result-key">ATTACK CHAIN</span><span class="result-val" style="color:var(--accent);font-family:var(--mono);font-size:11px;">${meta.attackChain}</span></div>` : ''}
+      ${meta.patternCount > 2 ? `<div class="result-row"><span class="result-key">PATTERN MEMORY</span><span class="result-val" style="color:var(--red);">⚠ Seen ${meta.patternCount} times in scam database</span></div>` : ''}
+      ${(meta.domainReputation||[]).length > 0 ? `<div class="result-row"><span class="result-key">DOMAIN REPUTATION</span><span class="result-val" style="color:var(--red);font-size:11px;">${meta.domainReputation.map(d=>d.domain+' ('+d.report_count+' reports, '+d.scam_type+')').join(', ')}</span></div>` : ''}
       <div style="margin-top:12px;padding:12px;background:var(--surface);border-radius:6px;font-size:12px;line-height:1.7;white-space:pre-wrap;">${data.assessment||''}</div>
     `;
   } catch(e) { result.innerHTML = '<div class="loading">Investigation failed: ' + e.message + '</div>'; }
