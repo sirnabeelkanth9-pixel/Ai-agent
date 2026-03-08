@@ -3,989 +3,949 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ScamShield AI — Crypto Risk Engine</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>ScamShield AI — Crypto Scam Intelligence Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0f;
-    --surface: #111118;
-    --surface2: #1a1a24;
-    --border: #2a2a3a;
-    --text: #e8e8f0;
-    --muted: #6b6b85;
-    --accent: #7c6dff;
-    --accent2: #4dffb4;
-    --red: #ff4d6d;
-    --yellow: #ffc84d;
-    --green: #4dffb4;
+    --bg: #080a0f;
+    --surface: #0d1117;
+    --card: #111620;
+    --border: #1e2535;
+    --red: #ff3a3a;
+    --red-dim: rgba(255,58,58,0.12);
+    --yellow: #f5a623;
+    --green: #22c55e;
+    --accent: #3b82f6;
+    --text: #e2e8f0;
+    --muted: #64748b;
     --mono: 'Space Mono', monospace;
-    --sans: 'DM Sans', sans-serif;
+    --sans: 'Syne', sans-serif;
   }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
+
   body {
     background: var(--bg);
     color: var(--text);
     font-family: var(--sans);
-    min-height: 100vh;
     overflow-x: hidden;
   }
 
-  /* Grid background */
+  /* ── NOISE TEXTURE ── */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image:
-      linear-gradient(rgba(124,109,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(124,109,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
     pointer-events: none;
     z-index: 0;
+    opacity: 0.4;
   }
 
-  .container { max-width: 860px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
-
-  /* Header */
-  header {
-    padding: 32px 0 24px;
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 40px;
+    background: rgba(8,10,15,0.85);
+    backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
-    margin-bottom: 40px;
   }
-  .header-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: gap; gap: 12px; }
-  .logo {
-    display: flex; align-items: center; gap: 12px;
-    font-family: var(--mono); font-size: 13px; font-weight: 700;
-    letter-spacing: 0.12em; text-transform: uppercase;
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 16px;
     color: var(--text);
     text-decoration: none;
   }
-  .logo-icon {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    box-shadow: 0 0 20px rgba(124,109,255,0.3);
+
+  .nav-logo .shield {
+    width: 28px; height: 28px;
+    background: var(--red);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: white;
+    animation: pulse-shield 3s ease-in-out infinite;
   }
-  .badge {
-    font-family: var(--mono); font-size: 10px;
-    background: rgba(124,109,255,0.15);
-    border: 1px solid rgba(124,109,255,0.3);
-    color: var(--accent);
-    padding: 4px 10px; border-radius: 20px;
-    letter-spacing: 0.08em;
+
+  @keyframes pulse-shield {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,58,58,0); }
+    50% { box-shadow: 0 0 20px 4px rgba(255,58,58,0.3); }
   }
-  .nav-links { display: flex; gap: 16px; align-items: center; }
-  .nav-link {
-    font-size: 13px; color: var(--muted);
-    text-decoration: none; transition: color 0.2s;
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
   }
-  .nav-link:hover { color: var(--text); }
-  .nav-btn {
-    font-family: var(--mono); font-size: 11px;
-    background: var(--accent); color: #fff;
-    border: none; padding: 8px 16px; border-radius: 6px;
-    cursor: pointer; letter-spacing: 0.05em;
+
+  .nav-links a {
+    color: var(--muted);
     text-decoration: none;
-    transition: opacity 0.2s;
+    font-size: 14px;
+    transition: color 0.2s;
   }
-  .nav-btn:hover { opacity: 0.85; }
 
-  /* Hero */
-  .hero { margin-bottom: 40px; }
-  .hero h1 {
-    font-family: var(--mono); font-size: clamp(22px, 4vw, 36px);
-    font-weight: 700; line-height: 1.2;
-    letter-spacing: -0.02em;
-    margin-bottom: 12px;
-  }
-  .hero h1 span { color: var(--accent); }
-  .hero p { color: var(--muted); font-size: 15px; max-width: 500px; line-height: 1.6; }
+  .nav-links a:hover { color: var(--text); }
 
-  /* Layer indicators */
-  .layers {
-    display: flex; gap: 8px; flex-wrap: wrap;
-    margin-top: 20px;
+  .nav-cta {
+    background: var(--red);
+    color: white !important;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px !important;
+    transition: opacity 0.2s !important;
   }
-  .layer-tag {
-    font-family: var(--mono); font-size: 10px;
+
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,58,58,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,58,58,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--red-dim);
+    border: 1px solid rgba(255,58,58,0.3);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--red);
+    margin-bottom: 32px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-badge .dot {
+    width: 6px; height: 6px;
+    background: var(--red);
+    border-radius: 50%;
+    animation: blink 1.5s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  h1 {
+    font-size: clamp(42px, 8vw, 86px);
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.7s ease 0.1s both;
+  }
+
+  h1 .red { color: var(--red); }
+  h1 .dim { color: var(--muted); }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+    animation: fadeUp 0.7s ease 0.2s both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeUp 0.7s ease 0.3s both;
+  }
+
+  .btn-primary {
+    background: var(--red);
+    color: white;
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background: #e02020;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255,58,58,0.3);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     border: 1px solid var(--border);
-    color: var(--muted); padding: 4px 10px;
-    border-radius: 4px; letter-spacing: 0.06em;
     transition: all 0.2s;
   }
-  .layer-tag.active {
-    border-color: var(--accent2);
-    color: var(--accent2);
-    background: rgba(77,255,180,0.06);
+
+  .btn-secondary:hover {
+    border-color: var(--muted);
+    transform: translateY(-2px);
   }
 
-  /* Input area */
-  .input-card {
+  /* ── SCAN DEMO ── */
+  .scan-demo {
+    width: 100%;
+    max-width: 680px;
+    margin: 64px auto 0;
+    animation: fadeUp 0.8s ease 0.4s both;
+  }
+
+  .scan-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .scan-header {
+    background: var(--surface);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .scan-header .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+
+  .scan-input-wrap {
+    display: flex;
+    align-items: stretch;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  #scanInput {
+    flex: 1;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 24px;
-    transition: border-color 0.3s;
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    resize: none;
+    height: 80px;
+    outline: none;
+    transition: border-color 0.2s;
   }
-  .input-card:focus-within { border-color: rgba(124,109,255,0.5); }
-  .input-label {
-    font-family: var(--mono); font-size: 10px;
-    color: var(--muted); letter-spacing: 0.1em;
-    text-transform: uppercase; margin-bottom: 12px;
-    display: block;
-  }
-  textarea {
-    width: 100%; background: transparent;
-    border: none; outline: none;
-    color: var(--text); font-family: var(--sans);
-    font-size: 15px; line-height: 1.6;
-    resize: none; min-height: 120px;
-  }
-  textarea::placeholder { color: var(--muted); }
-  .input-footer {
-    display: flex; align-items: center;
-    justify-content: space-between;
-    margin-top: 16px; padding-top: 16px;
-    border-top: 1px solid var(--border);
-    flex-wrap: wrap; gap: 12px;
-  }
-  .char-count { font-family: var(--mono); font-size: 11px; color: var(--muted); }
-  .btn-row { display: flex; gap: 10px; }
-  .btn {
-    font-family: var(--mono); font-size: 12px;
-    padding: 10px 24px; border-radius: 8px;
-    border: none; cursor: pointer;
-    letter-spacing: 0.06em; transition: all 0.2s;
+
+  #scanInput:focus { border-color: var(--red); }
+  #scanInput::placeholder { color: var(--muted); }
+
+  #scanBtn {
+    background: var(--red);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0 20px;
+    font-family: var(--mono);
+    font-size: 13px;
     font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
   }
-  .btn-primary {
-    background: var(--accent); color: #fff;
-    box-shadow: 0 0 20px rgba(124,109,255,0.3);
+
+  #scanBtn:hover { background: #e02020; }
+
+  .scan-result {
+    padding: 0 16px 16px;
+    display: none;
   }
-  .btn-primary:hover { background: #9384ff; box-shadow: 0 0 30px rgba(124,109,255,0.5); }
-  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-ghost {
-    background: transparent;
+
+  .scan-result.visible { display: block; }
+
+  .result-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .result-bar.critical { background: rgba(255,58,58,0.1); border: 1px solid rgba(255,58,58,0.3); }
+  .result-bar.caution  { background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.3); }
+  .result-bar.safe     { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); }
+
+  .result-score { font-size: 20px; font-weight: 700; }
+  .result-score.red    { color: var(--red); }
+  .result-score.yellow { color: var(--yellow); }
+  .result-score.green  { color: var(--green); }
+
+  .result-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--surface);
     border: 1px solid var(--border);
     color: var(--muted);
   }
-  .btn-ghost:hover { border-color: var(--text); color: var(--text); }
+  .tag.red { color: var(--red); border-color: rgba(255,58,58,0.3); background: rgba(255,58,58,0.08); }
 
-  /* Scanning animation */
-  .scanning-indicator {
-    display: none; align-items: center; gap: 12px;
-    padding: 16px 24px;
-    background: rgba(124,109,255,0.08);
-    border: 1px solid rgba(124,109,255,0.2);
-    border-radius: 10px; margin-bottom: 24px;
+  .scanning {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
   }
-  .scanning-indicator.active { display: flex; }
-  .scan-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--accent);
-    animation: pulse 1s infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.7); }
-  }
-  .scan-text { font-family: var(--mono); font-size: 12px; color: var(--accent); }
-
-  /* Results */
-  #results { display: none; }
-  #results.visible { display: block; animation: fadeUp 0.4s ease; }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Risk header card */
-  .risk-header {
-    border-radius: 16px; padding: 28px;
-    margin-bottom: 16px;
-    position: relative; overflow: hidden;
-  }
-  .risk-header::before {
-    content: ''; position: absolute;
-    top: -60px; right: -60px;
-    width: 200px; height: 200px;
+  .scanning.visible { display: flex; }
+  .scanning-dot {
+    width: 8px; height: 8px;
+    background: var(--red);
     border-radius: 50%;
-    opacity: 0.08;
+    animation: scan-pulse 0.8s ease-in-out infinite;
   }
-  .risk-header.critical { background: rgba(255,77,109,0.1); border: 1px solid rgba(255,77,109,0.3); }
-  .risk-header.critical::before { background: var(--red); }
-  .risk-header.high     { background: rgba(255,130,77,0.1); border: 1px solid rgba(255,130,77,0.3); }
-  .risk-header.high::before { background: #ff824d; }
-  .risk-header.caution  { background: rgba(255,200,77,0.1); border: 1px solid rgba(255,200,77,0.3); }
-  .risk-header.caution::before { background: var(--yellow); }
-  .risk-header.info     { background: rgba(77,255,180,0.08); border: 1px solid rgba(77,255,180,0.2); }
-  .risk-header.info::before { background: var(--green); }
-
-  .risk-level-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
-  .risk-emoji { font-size: 28px; }
-  .risk-level-text {
-    font-family: var(--mono); font-size: 22px; font-weight: 700;
-    letter-spacing: -0.01em;
-  }
-  .risk-category {
-    font-family: var(--mono); font-size: 11px;
-    padding: 4px 12px; border-radius: 20px;
-    border: 1px solid currentColor;
-    opacity: 0.7; letter-spacing: 0.06em;
+  @keyframes scan-pulse {
+    0%,100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.5; }
   }
 
-  /* Score bar */
-  .score-section { margin-bottom: 16px; }
-  .score-label {
-    display: flex; justify-content: space-between;
-    font-family: var(--mono); font-size: 11px; color: var(--muted);
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    padding: 0 24px;
+    margin-top: 80px;
+  }
+
+  .stat-item {
+    padding: 24px 40px;
+    text-align: center;
+    border-left: 1px solid var(--border);
+    animation: fadeUp 0.7s ease both;
+  }
+
+  .stat-item:first-child { border-left: none; }
+
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--red);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    display: block;
+  }
+
+  /* ── SECTION ── */
+  section {
+    padding: 100px 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--red);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+  }
+
+  .section-sub {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.7;
+    margin-bottom: 56px;
+  }
+
+  /* ── DETECT GRID ── */
+  .detect-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .detect-card {
+    background: var(--card);
+    padding: 28px;
+    transition: background 0.2s;
+  }
+
+  .detect-card:hover { background: #161c2a; }
+
+  .detect-icon {
+    font-size: 24px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .detect-title {
+    font-size: 15px;
+    font-weight: 700;
     margin-bottom: 8px;
+    color: var(--text);
   }
-  .score-value { color: var(--text); font-size: 14px; }
-  .score-bar {
-    height: 6px; background: rgba(255,255,255,0.08);
-    border-radius: 3px; overflow: hidden;
-  }
-  .score-fill {
-    height: 100%; border-radius: 3px;
-    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 0%;
-  }
-  .score-fill.critical { background: linear-gradient(90deg, #ff4d6d, #ff8b3d); }
-  .score-fill.high     { background: linear-gradient(90deg, #ff824d, #ffc84d); }
-  .score-fill.caution  { background: linear-gradient(90deg, #ffc84d, #ffe066); }
-  .score-fill.info     { background: linear-gradient(90deg, #4dffb4, #4dc8ff); }
 
-  .meta-row { display: flex; gap: 24px; flex-wrap: wrap; }
-  .meta-item { display: flex; flex-direction: column; gap: 2px; }
-  .meta-key { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.08em; }
-  .meta-val { font-size: 14px; font-weight: 500; }
-
-  /* Evidence breakdown */
-  .evidence-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px; margin-bottom: 16px;
+  .detect-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
   }
-  .evidence-card {
-    background: var(--surface2);
+
+  /* ── HOW IT WORKS ── */
+  .layers {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
     border: 1px solid var(--border);
-    border-radius: 10px; padding: 16px;
-    transition: border-color 0.2s;
+    border-radius: 12px;
+    overflow: hidden;
   }
-  .evidence-card:hover { border-color: rgba(124,109,255,0.3); }
-  .evidence-type {
-    font-family: var(--mono); font-size: 10px;
-    color: var(--muted); text-transform: uppercase;
-    letter-spacing: 0.1em; margin-bottom: 8px;
-  }
-  .evidence-count {
-    font-family: var(--mono); font-size: 28px;
-    font-weight: 700; line-height: 1;
-    margin-bottom: 4px;
-  }
-  .evidence-label { font-size: 12px; color: var(--muted); }
-  .ev-behavioral { color: #ff824d; }
-  .ev-linguistic  { color: var(--accent); }
-  .ev-technical   { color: var(--accent2); }
-  .ev-credential  { color: var(--red); }
-  .ev-negative    { color: var(--green); }
 
-  /* Info cards */
-  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-  @media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } }
+  .layer-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
 
-  .info-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px; padding: 18px;
-  }
-  .info-card-title {
-    font-family: var(--mono); font-size: 10px;
-    color: var(--muted); text-transform: uppercase;
-    letter-spacing: 0.1em; margin-bottom: 12px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .info-card-title::before {
-    content: ''; width: 6px; height: 6px;
-    border-radius: 50%; background: var(--accent);
+  .layer-row:last-child { border-bottom: none; }
+  .layer-row:hover { background: var(--card); }
+
+  .layer-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--red);
+    width: 24px;
     flex-shrink: 0;
   }
 
-  .flag-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-  .flag-item {
-    display: flex; align-items: flex-start; gap: 8px;
-    font-size: 13px; line-height: 1.4;
-  }
-  .flag-dot { font-size: 10px; margin-top: 3px; flex-shrink: 0; }
-
-  .tactic-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tactic-tag {
-    font-family: var(--mono); font-size: 10px;
-    padding: 4px 10px; border-radius: 4px;
-    background: rgba(124,109,255,0.12);
-    border: 1px solid rgba(124,109,255,0.2);
-    color: var(--accent);
-    letter-spacing: 0.04em;
+  .layer-name {
+    font-size: 14px;
+    font-weight: 700;
+    flex: 1;
   }
 
-  /* Combo triggers */
-  .combo-list { display: flex; flex-direction: column; gap: 8px; }
-  .combo-item {
-    background: rgba(255,200,77,0.08);
-    border: 1px solid rgba(255,200,77,0.2);
-    border-radius: 8px; padding: 10px 14px;
-    font-size: 12px; color: var(--yellow);
-    display: flex; align-items: center; gap: 8px;
-  }
-  .combo-item::before { content: '⚡'; font-size: 14px; }
-
-  /* URL signals */
-  .url-list { display: flex; flex-direction: column; gap: 6px; }
-  .url-signal {
-    font-family: var(--mono); font-size: 11px;
-    padding: 6px 10px;
-    background: rgba(255,77,109,0.08);
-    border: 1px solid rgba(255,77,109,0.2);
-    border-radius: 6px; color: #ff8b8b;
+  .layer-desc {
+    font-size: 13px;
+    color: var(--muted);
+    flex: 2;
   }
 
-  /* Outcome pattern */
-  .outcome-card {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px; padding: 18px;
-    margin-bottom: 16px;
-    display: flex; align-items: center; gap: 16px;
-  }
-  .outcome-icon { font-size: 24px; flex-shrink: 0; }
-  .outcome-label {
-    font-family: var(--mono); font-size: 10px;
-    color: var(--muted); letter-spacing: 0.1em;
-    text-transform: uppercase; margin-bottom: 4px;
-  }
-  .outcome-text { font-family: var(--mono); font-size: 13px; color: var(--yellow); }
-
-  /* Action bar */
-  .action-bar {
-    display: flex; gap: 10px; flex-wrap: wrap;
-    padding: 20px 0; border-top: 1px solid var(--border);
-  }
-  .btn-report {
-    background: rgba(255,77,109,0.15);
-    border: 1px solid rgba(255,77,109,0.3);
+  .layer-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--red-dim);
     color: var(--red);
+    border: 1px solid rgba(255,58,58,0.2);
+    white-space: nowrap;
   }
-  .btn-report:hover { background: rgba(255,77,109,0.25); }
-  .btn-copy {
-    background: rgba(77,255,180,0.1);
-    border: 1px solid rgba(77,255,180,0.2);
-    color: var(--green);
-  }
-  .btn-copy:hover { background: rgba(77,255,180,0.18); }
 
-  /* Wallet section */
-  .wallet-section {
-    background: var(--surface);
+  /* ── TELEGRAM CTA ── */
+  .tg-section {
+    background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 16px; padding: 24px;
-    margin-bottom: 24px;
-  }
-  .wallet-title {
-    font-family: var(--mono); font-size: 12px;
-    color: var(--muted); text-transform: uppercase;
-    letter-spacing: 0.1em; margin-bottom: 16px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .wallet-input-row { display: flex; gap: 10px; }
-  .wallet-input {
-    flex: 1; background: var(--surface2);
-    border: 1px solid var(--border); border-radius: 8px;
-    padding: 12px 16px; color: var(--text);
-    font-family: var(--mono); font-size: 12px;
-    outline: none; transition: border-color 0.2s;
-  }
-  .wallet-input:focus { border-color: rgba(124,109,255,0.5); }
-  .wallet-input::placeholder { color: var(--muted); }
-
-  /* Stats bar */
-  .stats-bar {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 1px; background: var(--border);
-    border: 1px solid var(--border); border-radius: 12px;
-    overflow: hidden; margin-bottom: 40px;
-  }
-  .stat-cell {
-    background: var(--surface); padding: 20px 16px;
+    border-radius: 16px;
+    padding: 60px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
   }
-  .stat-num {
-    font-family: var(--mono); font-size: 24px;
-    font-weight: 700; color: var(--accent);
-    line-height: 1; margin-bottom: 4px;
-  }
-  .stat-label { font-size: 11px; color: var(--muted); }
 
-  /* Footer */
+  .tg-section::before {
+    content: '🛡️';
+    position: absolute;
+    font-size: 200px;
+    opacity: 0.03;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .tg-section h2 {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+  }
+
+  .tg-section p {
+    color: var(--muted);
+    font-size: 16px;
+    margin-bottom: 36px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+  }
+
+  .tg-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #229ED9;
+    color: white;
+    padding: 16px 36px;
+    border-radius: 10px;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .tg-btn:hover {
+    background: #1a8bbf;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(34,158,217,0.3);
+  }
+
+  /* ── FOOTER ── */
   footer {
     border-top: 1px solid var(--border);
-    padding: 24px 0; margin-top: 48px;
-    display: flex; align-items: center;
-    justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: gap;
+    gap: 16px;
   }
-  footer p { font-size: 12px; color: var(--muted); }
-  .footer-links { display: flex; gap: 16px; }
-  .footer-link { font-size: 12px; color: var(--muted); text-decoration: none; }
-  .footer-link:hover { color: var(--text); }
 
-  /* Notification toast */
-  .toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: var(--surface2);
-    border: 1px solid var(--border); border-radius: 10px;
-    padding: 14px 20px; font-size: 13px;
-    transform: translateY(80px); opacity: 0;
-    transition: all 0.3s; z-index: 100;
-    max-width: 300px;
+  .footer-logo {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--muted);
   }
-  .toast.show { transform: translateY(0); opacity: 1; }
 
-  /* Admin link */
-  .admin-float {
-    position: fixed; bottom: 24px; left: 24px;
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 8px; padding: 10px 14px;
-    font-family: var(--mono); font-size: 11px; color: var(--muted);
-    text-decoration: none; z-index: 99;
-    transition: all 0.2s;
-    display: flex; align-items: center; gap: 8px;
+  .footer-links {
+    display: flex;
+    gap: 24px;
   }
-  .admin-float:hover { border-color: var(--accent); color: var(--accent); }
+
+  .footer-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--text); }
+
+  .footer-note {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in { opacity: 0; transform: translateY(20px); transition: all 0.6s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    nav { padding: 14px 20px; }
+    .nav-links { display: none; }
+    section { padding: 60px 20px; }
+    .stat-item { padding: 20px; }
+    .stat-num { font-size: 24px; }
+    .tg-section { padding: 40px 24px; }
+    .layer-desc { display: none; }
+    footer { flex-direction: column; text-align: center; }
+  }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <header>
-    <div class="header-inner">
-      <a href="#" class="logo">
-        <div class="logo-icon">🛡️</div>
-        ScamShield AI
-      </a>
-      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-        <span class="badge">v6.0 LIVE</span>
-        <div class="nav-links">
-          <a href="https://t.me/ScamShieldDetector_bot" class="nav-link" target="_blank">Telegram Bot</a>
-          <a href="#admin" class="nav-link">Admin</a>
-          <a href="https://t.me/ScamShieldDetector_bot" class="nav-btn" target="_blank">Try Bot →</a>
-        </div>
-      </div>
-    </div>
-  </header>
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="shield">⬡</div>
+    ScamShield
+  </a>
+  <ul class="nav-links">
+    <li><a href="#detect">What We Detect</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="https://t.me/ScamShieldDetector_bot" class="nav-cta" target="_blank">Try Free →</a></li>
+  </ul>
+</nav>
 
-  <div class="hero">
-    <h1>Crypto Risk<br><span>Classification Engine</span></h1>
-    <p>7-layer forensic detection. Rule-based + pattern intelligence. Not a chatbot — a threat classifier.</p>
-    <div class="layers">
-      <span class="layer-tag active">Rule Engine</span>
-      <span class="layer-tag active">Combo Detection</span>
-      <span class="layer-tag active">Tactic Clusters</span>
-      <span class="layer-tag active">Context Analysis</span>
-      <span class="layer-tag active">Narrative Detection</span>
-      <span class="layer-tag active">URL Intelligence</span>
-      <span class="layer-tag active">Scam Memory</span>
-    </div>
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-grid"></div>
+
+  <div class="hero-badge">
+    <div class="dot"></div>
+    LIVE — 10-Layer Forensic Engine
   </div>
 
-  <!-- Stats -->
-  <div class="stats-bar" id="statsBar">
-    <div class="stat-cell"><div class="stat-num" id="statScans">—</div><div class="stat-label">Total Scans</div></div>
-    <div class="stat-cell"><div class="stat-num" id="statDetected">—</div><div class="stat-label">Scams Detected</div></div>
-    <div class="stat-cell"><div class="stat-num" id="statRules">70</div><div class="stat-label">Detection Rules</div></div>
-    <div class="stat-cell"><div class="stat-num" id="statReports">—</div><div class="stat-label">Community Reports</div></div>
+  <h1>
+    Don't get <span class="red">drained.</span><br>
+    <span class="dim">Scan before you click.</span>
+  </h1>
+
+  <p class="hero-sub">
+    ScamShield AI detects crypto scams, wallet drainers, phishing attacks, and social engineering — before you lose your funds.
+  </p>
+
+  <div class="hero-actions">
+    <a href="https://t.me/ScamShieldDetector_bot" class="btn-primary" target="_blank">
+      ⚡ Try on Telegram — Free
+    </a>
+    <a href="dashboard.html" class="btn-secondary">
+      📊 Intelligence Dashboard →
+    </a>
   </div>
 
-  <!-- Text scan -->
-  <div class="input-card">
-    <label class="input-label">Paste suspicious message, URL, or wallet address</label>
-    <textarea id="scanInput" placeholder="e.g. Send 1 ETH to receive 5 ETH from Vitalik Buterin giveaway. Visit claim-eth.live to participate..." rows="5"></textarea>
-    <div class="input-footer">
-      <span class="char-count"><span id="charCount">0</span> characters</span>
-      <div class="btn-row">
-        <button class="btn btn-ghost" onclick="clearInput()">Clear</button>
-        <button class="btn btn-primary" id="scanBtn" onclick="runScan()">Analyze →</button>
+  <!-- LIVE SCANNER -->
+  <div class="scan-demo">
+    <div class="scan-box">
+      <div class="scan-header">
+        <div class="dot" style="background:#ff5f57"></div>
+        <div class="dot" style="background:#febc2e"></div>
+        <div class="dot" style="background:#28c840"></div>
+        <span style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:8px;">ScamShield Live Scanner</span>
       </div>
-    </div>
-  </div>
-
-  <!-- Wallet check -->
-  <div class="wallet-section">
-    <div class="wallet-title">
-      🔗 On-Chain Wallet Check
-    </div>
-    <div class="wallet-input-row">
-      <input class="wallet-input" id="walletInput" placeholder="0x... Ethereum address" />
-      <button class="btn btn-primary" onclick="runWalletCheck()">Check Wallet</button>
-    </div>
-  </div>
-
-  <!-- Scanning -->
-  <div class="scanning-indicator" id="scanningIndicator">
-    <div class="scan-dot"></div>
-    <span class="scan-text" id="scanText">Running 7-layer analysis...</span>
-  </div>
-
-  <!-- Results -->
-  <div id="results">
-
-    <!-- Risk header -->
-    <div class="risk-header" id="riskHeader">
-      <div class="risk-level-row">
-        <span class="risk-emoji" id="riskEmoji">🔴</span>
-        <span class="risk-level-text" id="riskLevel">—</span>
-        <span class="risk-category" id="riskCategory">—</span>
+      <div class="scan-input-wrap">
+        <textarea id="scanInput" placeholder="Paste any suspicious message, URL, or wallet address here..."></textarea>
+        <button id="scanBtn" onclick="runScan()">SCAN →</button>
       </div>
-      <div class="score-section">
-        <div class="score-label">
-          <span>RISK SCORE</span>
-          <span class="score-value" id="scoreValue">0.0 / 10</span>
-        </div>
-        <div class="score-bar"><div class="score-fill" id="scoreFill"></div></div>
+      <div class="scanning" id="scanning">
+        <div class="scanning-dot"></div>
+        Analyzing with 10-layer forensic engine...
       </div>
-      <div class="meta-row">
-        <div class="meta-item">
-          <span class="meta-key">Confidence</span>
-          <span class="meta-val" id="metaConfidence">—</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-key">Evidence</span>
-          <span class="meta-val" id="metaEvidence">—</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-key">Rules Triggered</span>
-          <span class="meta-val" id="metaRules">—</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-key">Combos</span>
-          <span class="meta-val" id="metaCombos">—</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Evidence breakdown -->
-    <div class="evidence-grid" id="evidenceGrid"></div>
-
-    <!-- Combo triggers -->
-    <div class="info-card" id="comboCard" style="margin-bottom:12px; display:none;">
-      <div class="info-card-title">Combination Triggers</div>
-      <div class="combo-list" id="comboList"></div>
-    </div>
-
-    <!-- URL signals -->
-    <div class="info-card" id="urlCard" style="margin-bottom:12px; display:none;">
-      <div class="info-card-title">URL Risk Signals</div>
-      <div class="url-list" id="urlList"></div>
-    </div>
-
-    <!-- Flags + Tactics -->
-    <div class="info-grid">
-      <div class="info-card">
-        <div class="info-card-title">Risk Indicators</div>
-        <ul class="flag-list" id="flagList"></ul>
-      </div>
-      <div class="info-card">
-        <div class="info-card-title">Psychological Tactics</div>
-        <div class="tactic-tags" id="tacticTags"></div>
-        <div style="margin-top:14px;" id="contextFlagsSection"></div>
-      </div>
-    </div>
-
-    <!-- Outcome pattern -->
-    <div class="outcome-card" id="outcomeCard">
-      <div class="outcome-icon">⚠️</div>
-      <div>
-        <div class="outcome-label">Common Outcome Pattern</div>
-        <div class="outcome-text" id="outcomeText">—</div>
-      </div>
-    </div>
-
-    <!-- Action bar -->
-    <div class="action-bar">
-      <button class="btn btn-ghost btn-report" onclick="reportScam()">⚑ Report Scam</button>
-      <button class="btn btn-ghost btn-copy" onclick="copyResult()">Copy Report</button>
-      <button class="btn btn-ghost" onclick="shareToTelegram()">Share to Telegram</button>
+      <div class="scan-result" id="scanResult"></div>
     </div>
   </div>
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<!-- Admin link -->
-<a href="#" class="admin-float" onclick="showAdminDashboard()">⚙ Admin</a>
-
-<!-- Admin Modal -->
-<div id="adminModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:200; overflow-y:auto;">
-  <div style="max-width:700px; margin:40px auto; padding:20px;">
-    <div style="background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-        <h2 style="font-family:var(--mono); font-size:16px; letter-spacing:0.08em;">ADMIN DASHBOARD</h2>
-        <button onclick="document.getElementById('adminModal').style.display='none'" style="background:none; border:none; color:var(--muted); cursor:pointer; font-size:20px;">✕</button>
-      </div>
-      <div id="adminContent" style="color:var(--muted); font-family:var(--mono); font-size:12px;">Loading...</div>
-    </div>
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item" style="animation-delay:0.1s">
+    <span class="stat-num" id="stat-rules">120+</span>
+    <span class="stat-label">Detection Rules</span>
+  </div>
+  <div class="stat-item" style="animation-delay:0.2s">
+    <span class="stat-num">15+</span>
+    <span class="stat-label">Scam Scenarios</span>
+  </div>
+  <div class="stat-item" style="animation-delay:0.3s">
+    <span class="stat-num">10</span>
+    <span class="stat-label">Detection Layers</span>
+  </div>
+  <div class="stat-item" style="animation-delay:0.4s">
+    <span class="stat-num">95%</span>
+    <span class="stat-label">Web3 Scam Coverage</span>
   </div>
 </div>
+
+<!-- WHAT WE DETECT -->
+<section id="detect">
+  <p class="section-label fade-in">Detection Coverage</p>
+  <h2 class="section-title fade-in">Every scam class. <span style="color:var(--red)">Detected.</span></h2>
+  <p class="section-sub fade-in">ScamShield covers the full spectrum of crypto attacks — from obvious giveaway scams to sophisticated stealth wallet drainers.</p>
+
+  <div class="detect-grid fade-in">
+    <div class="detect-card">
+      <span class="detect-icon">🔑</span>
+      <div class="detect-title">Seed Phrase Theft</div>
+      <div class="detect-desc">Direct credential harvesting targeting your wallet recovery phrase.</div>
+    </div>
+    <div class="detect-card">
+      <span class="detect-icon">💧</span>
+      <div class="detect-title">Liquidity Mining Drainer</div>
+      <div class="detect-desc">Fake DeFi pools requiring validation transactions to drain funds.</div>
+    </div>
+    <div class="detect-card">
+      <span class="detect-icon">🏦</span>
+      <div class="detect-title">Fake Exchange Support</div>
+      <div class="detect-desc">Impersonation of Binance, Coinbase, MetaMask support teams.</div>
+    </div>
+    <div class="detect-card">
+      <span class="detect-icon">🔐</span>
+      <div class="detect-title">Approval Contract Drain</div>
+      <div class="detect-desc">Malicious smart contract approvals that silently drain all assets.</div>
+    </div>
+    <div class="detect-card">
+      <span class="detect-icon">🎭</span>
+      <div class="detect-title">Stealth Auth Drainer</div>
+      <div class="detect-desc">Technical-sounding authorization requests designed to avoid detection.</div>
+    </div>
+    <div class="detect-card">
+      <span class="detect-icon">🔗</span>
+      <div class="detect-title">Trusted Domain Phishing</div>
+      <div class="detect-desc">Scams hosted on Google Docs, Notion, GitHub Pages to bypass filters.</div>
+    </div>
+    <div class="detect-card">
+      <span class="detect-icon">🎁</span>
+      <div class="detect-title">Airdrop / Giveaway Scam</div>
+      <div class="detect-desc">Fake token distributions requiring wallet connection or payment.</div>
+    </div>
+    <div class="detect-card">
+      <span class="detect-icon">📈</span>
+      <div class="detect-title">Investment / Rug Pull</div>
+      <div class="detect-desc">Fraudulent investment schemes and token exit scams.</div>
+    </div>
+    <div class="detect-card">
+      <span class="detect-icon">🧠</span>
+      <div class="detect-title">Social Engineering</div>
+      <div class="detect-desc">Multi-message manipulation chains — support + fear + reconnect.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <p class="section-label fade-in">Detection Architecture</p>
+  <h2 class="section-title fade-in">10 layers of <span style="color:var(--red)">forensic intelligence</span></h2>
+  <p class="section-sub fade-in">Not just keyword matching. ScamShield reconstructs attack chains, scores psychological pressure, and detects behavioral patterns.</p>
+
+  <div class="layers fade-in">
+    <div class="layer-row">
+      <span class="layer-num">01</span>
+      <span class="layer-name">Rule Engine</span>
+      <span class="layer-desc">120+ structured rules with confidence weights</span>
+      <span class="layer-badge">120+ rules</span>
+    </div>
+    <div class="layer-row">
+      <span class="layer-num">02</span>
+      <span class="layer-name">Combo Engine</span>
+      <span class="layer-desc">37 multi-rule combo triggers for pattern combinations</span>
+      <span class="layer-badge">37 combos</span>
+    </div>
+    <div class="layer-row">
+      <span class="layer-num">03</span>
+      <span class="layer-name">Signal Clusters</span>
+      <span class="layer-desc">14 psychology-based behavioral clusters</span>
+      <span class="layer-badge">14 clusters</span>
+    </div>
+    <div class="layer-row">
+      <span class="layer-num">04</span>
+      <span class="layer-name">Scenario Classifier</span>
+      <span class="layer-desc">Identifies exact scam attack type from 15 scenarios</span>
+      <span class="layer-badge">15 scenarios</span>
+    </div>
+    <div class="layer-row">
+      <span class="layer-num">05</span>
+      <span class="layer-name">Unicode Normalizer</span>
+      <span class="layer-desc">Catches homoglyph spoofing — Bіnance ≠ Binance</span>
+      <span class="layer-badge">NEW</span>
+    </div>
+    <div class="layer-row">
+      <span class="layer-num">06</span>
+      <span class="layer-name">URL Intelligence</span>
+      <span class="layer-desc">Domain reputation, brand impersonation, link chain detection</span>
+      <span class="layer-badge">live</span>
+    </div>
+    <div class="layer-row">
+      <span class="layer-num">07</span>
+      <span class="layer-name">Psychology Scorer</span>
+      <span class="layer-desc">Measures manipulation pressure 0–10 across 12 tactics</span>
+      <span class="layer-badge">live</span>
+    </div>
+    <div class="layer-row">
+      <span class="layer-num">08</span>
+      <span class="layer-name">Attack Chain Mapper</span>
+      <span class="layer-desc">Reconstructs scam flow step-by-step</span>
+      <span class="layer-badge">live</span>
+    </div>
+    <div class="layer-row">
+      <span class="layer-num">09</span>
+      <span class="layer-name">Campaign Intelligence</span>
+      <span class="layer-desc">Tracks repeated patterns across community reports</span>
+      <span class="layer-badge">live</span>
+    </div>
+    <div class="layer-row">
+      <span class="layer-num">10</span>
+      <span class="layer-name">Domain Reputation DB</span>
+      <span class="layer-desc">Known phishing infrastructure and scam domain tracking</span>
+      <span class="layer-badge">live</span>
+    </div>
+  </div>
+</section>
+
+<!-- TELEGRAM CTA -->
+<section>
+  <div class="tg-section fade-in">
+    <h2>Protect your wallet. <span style="color:#229ED9">Right now.</span></h2>
+    <p>7 free scans per week. No signup. No wallet connection. Just paste and scan.</p>
+    <a href="https://t.me/ScamShieldDetector_bot" class="tg-btn" target="_blank">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/></svg>
+      Open @ScamShieldDetector_bot
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">🛡️ ScamShield AI</div>
+  <div class="footer-links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="https://t.me/ScamShieldDetector_bot" target="_blank">Telegram Bot</a>
+    <a href="#detect">Detection</a>
+    <a href="#how">How It Works</a>
+  </div>
+  <div class="footer-note">Not financial advice. Always verify independently.</div>
+</footer>
 
 <script>
 const API = 'https://scamshield-backend-production-708e.up.railway.app';
-let lastResult = null;
-let lastText   = '';
-
-// Load stats
-async function loadStats() {
-  try {
-    const [statsRes, memRes] = await Promise.all([
-      fetch(`${API}/api/stats`),
-      fetch(`${API}/api/memory-stats`)
-    ]);
-    const stats = await statsRes.json();
-    const mem   = await memRes.json();
-    document.getElementById('statScans').textContent    = (stats.totalScans || 0).toLocaleString();
-    document.getElementById('statDetected').textContent = (stats.highRiskScans || 0).toLocaleString();
-    document.getElementById('statReports').textContent  = (mem.totalReports || 0).toLocaleString();
-  } catch(e) {}
-}
-loadStats();
-
-// Char counter
-document.getElementById('scanInput').addEventListener('input', function() {
-  document.getElementById('charCount').textContent = this.value.length;
-});
-
-function clearInput() {
-  document.getElementById('scanInput').value = '';
-  document.getElementById('charCount').textContent = '0';
-  document.getElementById('results').classList.remove('visible');
-}
 
 async function runScan() {
   const text = document.getElementById('scanInput').value.trim();
-  if (!text) { showToast('Paste a message to analyze'); return; }
+  if (!text) return;
 
-  lastText = text;
-  setScanning(true, 'Running 7-layer analysis...');
+  const scanning  = document.getElementById('scanning');
+  const result    = document.getElementById('scanResult');
+  const btn       = document.getElementById('scanBtn');
+
+  scanning.classList.add('visible');
+  result.classList.remove('visible');
+  btn.disabled = true;
+  btn.textContent = '...';
 
   try {
     const res  = await fetch(`${API}/api/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, userId: 'web', source: 'web' })
+      body: JSON.stringify({ text, userId: 'web', source: 'landing' })
     });
     const data = await res.json();
+    const meta = data.meta || {};
+    const score = meta.score || 0;
+    const level = meta.severityLevel || 'UNKNOWN';
 
-    if (data.success) {
-      lastResult = data;
-      renderResults(data);
-    } else {
-      showToast('Analysis failed: ' + (data.error || 'Unknown error'));
-    }
-  } catch(e) {
-    showToast('Connection error. Is the backend running?');
-  } finally {
-    setScanning(false);
-  }
-}
+    const colorClass = score >= 7 ? 'critical' : score >= 4 ? 'caution' : 'safe';
+    const scoreColor = score >= 7 ? 'red' : score >= 4 ? 'yellow' : 'green';
+    const emoji      = score >= 9 ? '🔴' : score >= 7 ? '🟠' : score >= 4 ? '🟡' : '🟢';
 
-async function runWalletCheck() {
-  const address = document.getElementById('walletInput').value.trim();
-  if (!address) { showToast('Enter a wallet address'); return; }
+    const tags = [
+      ...(meta.triggeredClusters||[]).slice(0,2).map(c => `<span class="tag red">${c.name}</span>`),
+      meta.scenario ? `<span class="tag red">${meta.scenario.name}</span>` : '',
+      ...(meta.triggeredRules||[]).slice(0,3).map(r => `<span class="tag">${r.id}</span>`),
+    ].filter(Boolean).join('');
 
-  setScanning(true, 'Fetching on-chain data from Etherscan...');
-
-  try {
-    const res  = await fetch(`${API}/api/wallet`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ address, userId: 'web' })
-    });
-    const data = await res.json();
-
-    if (data.success && data.result) {
-      renderWalletResult(data.result);
-    } else {
-      showToast(data.error || 'Wallet analysis failed');
-    }
-  } catch(e) {
-    showToast('Connection error.');
-  } finally {
-    setScanning(false);
-  }
-}
-
-function renderResults(data) {
-  const meta  = data.meta || {};
-  const score = meta.score || 0;
-  const level = meta.severityLevel || 'INFORMATIONAL';
-  const cat   = meta.category || 'Unknown';
-
-  // Determine class
-  const cls = level === 'CRITICAL' ? 'critical'
-            : level === 'HIGH RISK' ? 'high'
-            : level === 'CAUTION'   ? 'caution' : 'info';
-
-  const emoji = (level === 'CRITICAL' || level === 'HIGH RISK') ? '🔴'
-              : level === 'CAUTION' ? '🟡' : '🟢';
-
-  // Risk header
-  const header = document.getElementById('riskHeader');
-  header.className = `risk-header ${cls}`;
-  document.getElementById('riskEmoji').textContent    = emoji;
-  document.getElementById('riskLevel').textContent    = level;
-  document.getElementById('riskCategory').textContent = cat;
-  document.getElementById('scoreValue').textContent   = `${score} / 10`;
-
-  // Score bar
-  const fill = document.getElementById('scoreFill');
-  fill.className = `score-fill ${cls}`;
-  setTimeout(() => { fill.style.width = `${(score / 10) * 100}%`; }, 100);
-
-  // Meta
-  document.getElementById('metaConfidence').textContent = meta.confidence || '—';
-  document.getElementById('metaEvidence').textContent   = meta.evidenceStrength || '—';
-  document.getElementById('metaRules').textContent      = (meta.triggeredRules || []).length;
-  document.getElementById('metaCombos').textContent     = (meta.triggeredCombos || []).length || '0';
-
-  // Evidence breakdown
-  const evGrid = document.getElementById('evidenceGrid');
-  evGrid.innerHTML = '';
-  const breakdown = meta.evidenceBreakdown || {};
-  const evTypes = { behavioral: 'Behavioral', linguistic: 'Linguistic', technical: 'Technical', credential: 'Credential' };
-  Object.entries(evTypes).forEach(([key, label]) => {
-    const count = breakdown[key] || 0;
-    if (count > 0 || key === 'credential') {
-      evGrid.innerHTML += `
-        <div class="evidence-card">
-          <div class="evidence-type">${label}</div>
-          <div class="evidence-count ev-${key}">${count}</div>
-          <div class="evidence-label">signal${count !== 1 ? 's' : ''} detected</div>
-        </div>`;
-    }
-  });
-
-  // Combo triggers
-  const combos = meta.triggeredCombos || [];
-  const comboCard = document.getElementById('comboCard');
-  if (combos.length > 0) {
-    comboCard.style.display = 'block';
-    document.getElementById('comboList').innerHTML = combos
-      .map(c => `<div class="combo-item">${c.description}</div>`)
-      .join('');
-  } else {
-    comboCard.style.display = 'none';
-  }
-
-  // URL signals
-  const urlSignals = meta.urlSignals || [];
-  const urlCard = document.getElementById('urlCard');
-  if (urlSignals.length > 0) {
-    urlCard.style.display = 'block';
-    document.getElementById('urlList').innerHTML = urlSignals
-      .map(s => `<div class="url-signal">⚠ ${s}</div>`)
-      .join('');
-  } else {
-    urlCard.style.display = 'none';
-  }
-
-  // Flags
-  const flags = meta.triggeredRules || [];
-  document.getElementById('flagList').innerHTML = flags.length > 0
-    ? flags.map(r => `<li class="flag-item"><span class="flag-dot">◆</span> ${r.description}</li>`).join('')
-    : '<li class="flag-item" style="color:var(--green)">✓ No significant risk indicators</li>';
-
-  // Tactics
-  const tactics = meta.psychTactics || [];
-  document.getElementById('tacticTags').innerHTML = tactics.length > 0
-    ? tactics.map(t => `<span class="tactic-tag">${t}</span>`).join('')
-    : '<span style="font-size:13px;color:var(--muted)">None detected</span>';
-
-  // Context flags
-  const ctxFlags = meta.contextFlags || [];
-  const ctxSection = document.getElementById('contextFlagsSection');
-  if (ctxFlags.length > 0) {
-    ctxSection.innerHTML = `
-      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;margin-top:12px;">Context Signals</div>
-      ${ctxFlags.map(f => `<div style="font-size:12px;color:var(--green);margin-bottom:4px;">✓ ${f.label}</div>`).join('')}`;
-  } else {
-    ctxSection.innerHTML = '';
-  }
-
-  // Outcome
-  const outcome = data.assessment?.match(/Common Outcome Pattern: (.+)/)?.[1];
-  if (outcome) {
-    document.getElementById('outcomeText').textContent = outcome;
-    document.getElementById('outcomeCard').style.display = 'flex';
-  } else {
-    document.getElementById('outcomeCard').style.display = 'none';
-  }
-
-  // Show results
-  const resultsEl = document.getElementById('results');
-  resultsEl.classList.add('visible');
-  resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  loadStats();
-}
-
-function renderWalletResult(w) {
-  const score = w.score || 0;
-  const level = w.severityLevel || 'INFORMATIONAL';
-  const cls   = level === 'CRITICAL' ? 'critical' : level === 'HIGH RISK' ? 'high' : level === 'CAUTION' ? 'caution' : 'info';
-  const emoji = (level === 'CRITICAL' || level === 'HIGH RISK') ? '🔴' : level === 'CAUTION' ? '🟡' : '🟢';
-
-  const header = document.getElementById('riskHeader');
-  header.className = `risk-header ${cls}`;
-  document.getElementById('riskEmoji').textContent    = emoji;
-  document.getElementById('riskLevel').textContent    = level;
-  document.getElementById('riskCategory').textContent = 'Wallet Analysis';
-  document.getElementById('scoreValue').textContent   = `${score} / 10`;
-
-  const fill = document.getElementById('scoreFill');
-  fill.className = `score-fill ${cls}`;
-  setTimeout(() => { fill.style.width = `${(score/10)*100}%`; }, 100);
-
-  document.getElementById('metaConfidence').textContent = w.evidenceStrength || '—';
-  document.getElementById('metaEvidence').textContent   = w.evidenceStrength || '—';
-  document.getElementById('metaRules').textContent      = (w.flags || []).length + ' flags';
-  document.getElementById('metaCombos').textContent     = '—';
-
-  document.getElementById('evidenceGrid').innerHTML = '';
-  document.getElementById('comboCard').style.display = 'none';
-  document.getElementById('urlCard').style.display   = 'none';
-
-  // Show indicators as flags
-  const allFlags = [
-    ...(w.flags || []),
-    ...(w.indicators || []).map(i => `${i.label}: ${i.value}`)
-  ];
-  document.getElementById('flagList').innerHTML = allFlags.length > 0
-    ? allFlags.map(f => `<li class="flag-item"><span class="flag-dot">◆</span> ${f}</li>`).join('')
-    : '<li class="flag-item" style="color:var(--green)">✓ No risk flags detected</li>';
-
-  document.getElementById('tacticTags').innerHTML = `<span style="font-size:13px;color:var(--muted)">On-chain analysis</span>`;
-  document.getElementById('contextFlagsSection').innerHTML = '';
-  document.getElementById('outcomeText').textContent = w.summary || '—';
-  document.getElementById('outcomeCard').style.display = 'flex';
-
-  document.getElementById('results').classList.add('visible');
-  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-async function reportScam() {
-  if (!lastText) { showToast('Run a scan first'); return; }
-  try {
-    await fetch(`${API}/api/report`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: lastText, riskScore: lastResult?.meta?.score, category: lastResult?.meta?.category })
-    });
-    showToast('✓ Scam reported to community database');
-    loadStats();
-  } catch(e) { showToast('Report failed'); }
-}
-
-function copyResult() {
-  if (!lastResult?.assessment) { showToast('Run a scan first'); return; }
-  navigator.clipboard.writeText(lastResult.assessment).then(() => showToast('✓ Copied to clipboard'));
-}
-
-function shareToTelegram() {
-  if (!lastText) { showToast('Run a scan first'); return; }
-  const url = `https://t.me/ScamShieldDetector_bot`;
-  window.open(url, '_blank');
-  showToast('Opening Telegram bot...');
-}
-
-async function showAdminDashboard() {
-  document.getElementById('adminModal').style.display = 'block';
-  const content = document.getElementById('adminContent');
-  try {
-    const [statsRes, memRes] = await Promise.all([
-      fetch(`${API}/api/stats`),
-      fetch(`${API}/api/memory-stats`)
-    ]);
-    const stats = await statsRes.json();
-    const mem   = await memRes.json();
-    const topDomains = (mem.topDomains || [])
-      .map((d, i) => `${i+1}. ${d.domain} — ${d.report_count} reports`)
-      .join('\n') || 'None yet';
-
-    content.innerHTML = `
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
-        <div style="background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:16px;">
-          <div style="color:var(--muted); margin-bottom:6px; font-size:10px; letter-spacing:0.1em;">TOTAL SCANS</div>
-          <div style="font-size:28px; font-weight:700; color:var(--accent);">${stats.totalScans || 0}</div>
-        </div>
-        <div style="background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:16px;">
-          <div style="color:var(--muted); margin-bottom:6px; font-size:10px; letter-spacing:0.1em;">HIGH RISK DETECTIONS</div>
-          <div style="font-size:28px; font-weight:700; color:var(--red);">${stats.highRiskScans || 0}</div>
-        </div>
-        <div style="background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:16px;">
-          <div style="color:var(--muted); margin-bottom:6px; font-size:10px; letter-spacing:0.1em;">COMMUNITY REPORTS</div>
-          <div style="font-size:28px; font-weight:700; color:var(--yellow);">${mem.totalReports || 0}</div>
-        </div>
-        <div style="background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:16px;">
-          <div style="color:var(--muted); margin-bottom:6px; font-size:10px; letter-spacing:0.1em;">KNOWN DOMAINS</div>
-          <div style="font-size:28px; font-weight:700; color:var(--accent2);">${mem.knownDomains || 0}</div>
-        </div>
+    result.innerHTML = `
+      <div class="result-bar ${colorClass}">
+        <span style="font-size:18px;">${emoji}</span>
+        <span class="result-score ${scoreColor}">${score} / 10</span>
+        <span style="font-family:var(--mono);font-size:13px;font-weight:700;">${level}</span>
+        <span style="color:var(--muted);font-size:12px;margin-left:auto;">${meta.category || ''}</span>
       </div>
-      <div style="background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:12px;">
-        <div style="color:var(--muted); margin-bottom:10px; font-size:10px; letter-spacing:0.1em; text-transform:uppercase;">Top Reported Domains</div>
-        <pre style="font-size:12px; line-height:1.8; color:var(--text);">${topDomains}</pre>
-      </div>
-      <div style="background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:16px;">
-        <div style="color:var(--muted); margin-bottom:10px; font-size:10px; letter-spacing:0.1em; text-transform:uppercase;">Detection Engine</div>
-        <div style="display:flex; flex-direction:column; gap:6px; font-size:12px; line-height:1.8;">
-          <span>Rules: <span style="color:var(--accent2)">70 structured rules</span></span>
-          <span>Combos: <span style="color:var(--accent2)">8 combination triggers</span></span>
-          <span>Clusters: <span style="color:var(--accent2)">8 tactic clusters</span></span>
-          <span>Narratives: <span style="color:var(--accent2)">10 story patterns</span></span>
-          <span>URL Brands: <span style="color:var(--accent2)">16 crypto brands monitored</span></span>
-          <span>Backend: <span style="color:var(--accent2)">Railway (auto-deploy)</span></span>
-        </div>
-      </div>
+      ${tags ? `<div class="result-tags">${tags}</div>` : ''}
+      ${meta.attackChain ? `<div style="margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--muted);padding:10px;background:var(--surface);border-radius:6px;border:1px solid var(--border);">⛓ ${meta.attackChain}</div>` : ''}
     `;
+    result.classList.add('visible');
   } catch(e) {
-    content.innerHTML = `<span style="color:var(--red)">Failed to load admin data. Backend may be starting up.</span>`;
+    result.innerHTML = `<div style="color:var(--muted);font-size:13px;font-family:var(--mono);padding:12px;">API unavailable — try the Telegram bot instead.</div>`;
+    result.classList.add('visible');
   }
+
+  scanning.classList.remove('visible');
+  btn.disabled = false;
+  btn.textContent = 'SCAN →';
 }
 
-function setScanning(active, msg) {
-  const indicator = document.getElementById('scanningIndicator');
-  const btn       = document.getElementById('scanBtn');
-  if (active) {
-    indicator.classList.add('active');
-    document.getElementById('scanText').textContent = msg || 'Analyzing...';
-    btn.disabled = true;
-    btn.textContent = 'Analyzing...';
-  } else {
-    indicator.classList.remove('active');
-    btn.disabled = false;
-    btn.textContent = 'Analyze →';
-  }
-}
-
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 3000);
-}
-
-// Enter key support
-document.getElementById('walletInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') runWalletCheck();
+// Enter key to scan
+document.getElementById('scanInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.ctrlKey) runScan();
 });
+
+// Scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// Load live stats
+fetch(`${API}/api/stats`).then(r=>r.json()).then(d => {
+  if (d.totalScans) document.getElementById('stat-rules').textContent = (d.totalScans || '0').toLocaleString();
+}).catch(()=>{});
 </script>
 </body>
 </html>
